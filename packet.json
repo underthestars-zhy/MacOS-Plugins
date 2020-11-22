@@ -5,6 +5,7 @@
         "plugins": [],
         "shortcut_name": "prm",
         "db_set": [],
-        "update": []
+        "update": [],
+        "readme"
     }
 }
