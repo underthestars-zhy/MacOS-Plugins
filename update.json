@@ -1,0 +1,15 @@
+{
+    "README": "-\u5168\u65b0\u7684\u7248\u672c\u66f4\u65b0\u529f\u80fd\n-BugFix",
+    "1.1": {
+        "db_set": [
+            [
+                "json_url",
+                "https://raw.githubusercontent.com/underthestars-zhy/MacOS-Plugins/main/packet.json"
+            ],
+            [
+                "update_url",
+                "https://raw.githubusercontent.com/underthestars-zhy/MacOS-Plugins/main/update.json"
+            ]
+        ]
+    }
+}
