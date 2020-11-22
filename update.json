@@ -20,12 +20,14 @@
             [
                 "^_readme_cn",
                 "json",
-                1
+                0,
+                "readme_cn"
             ],
             [
                 "^_readme_en",
                 "json",
-                1
+                0,
+                "readme_en"
             ]
         ]
     }
