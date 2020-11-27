@@ -1,5 +1,10 @@
 #! /usr/local/bin/python3
 
+#  Copyright (c) 2020.
+#  You can freely change the code part, but you must follow the MIT protocol
+#  You cannot delete any information about UTS
+#  You cannot use this program to disrupt social order.
+
 # 导入模块
 import argparse
 import os
@@ -8,7 +13,7 @@ import sys
 import json
 
 # 常量设置
-VERSION = 1.1
+VERSION = 1.2
 
 # 多语言设置
 file_lists = os.listdir(os.path.expanduser('~'))
@@ -37,6 +42,8 @@ if 'mop.json' in file_lists:
         update_init = 'Version is up to date, please do not install low version!'
         update_file_success = 'The update file was successfully retrieved'
         update_find = 'FIND THE UPDATE FILE!'
+        readme_help = 'View the plugin help'
+        welcome_flag = False
     elif mop_db['language'] == 'cn':
         init_help = '初始化或者更新当前文件夹'
         install_help = '安装插件'
@@ -59,10 +66,13 @@ if 'mop.json' in file_lists:
         update_init = '版本已经是最新,请勿安装低版本!'
         update_file_success = '成功获取更新文件'
         update_find = '查找到更新文件!'
+        readme_help = '查看插件帮助'
+        welcome_flag = False
     mop_db.close()
     mop_db_file = True
 else:
     mop_db_file = False
+    welcome_flag = True
     init_help = 'Initialize or update in the current folder'
     install_help = 'Installation plug-in'
     welcome = 'Welcome-MOP\nYou need to initialize the warehouse first'
@@ -75,11 +85,13 @@ parser = argparse.ArgumentParser(description='MacOS 11 Plugins Install Tool')
 parser.add_argument('-init', type=str, help=init_help, choices=['install', 'update'], nargs=1)  # 初始化/更新命令
 parser.add_argument('-install', type=str, help=install_help, nargs=1)  # 安装命令
 parser.add_argument('-language', type=str, help=language_help, nargs=1, choices=['en', 'cn'])  # 更换语言
+parser.add_argument('-readme', type=str, help=readme_help, nargs=1)  # 查看插件帮助
 
 args = parser.parse_args()
 
 # 欢迎
-print(welcome)
+if welcome_flag:
+    print(welcome)
 
 # 初始化/更新
 if args.init:
@@ -102,7 +114,6 @@ if args.init:
         mop_db['language'] = input()
         language = mop_db['language']
         mop_db['json_url'] = 'https://raw.githubusercontent.com/underthestars-zhy/MacOS-Plugins/main/packet.json'
-        mop_db['update_url'] = 'https://raw.githubusercontent.com/underthestars-zhy/MacOS-Plugins/main/update.json'
         mop_db.close()
         file = open(os.path.expanduser('~/mop.json'), 'w')  # 为后续获取DB数据库路径做准备
         path_ = os.path.abspath('.') + '/'
@@ -113,40 +124,38 @@ if args.init:
         elif language == 'cn':
             print('成功')
     if args.init[0] == 'update' and mop_db_file:
-        print(update_text)
         mop_db = shelve.open(mop_db_path + 'mop')
-        if str(mop_db['version']) >= str(VERSION):  # 检测是否更新到"低"版本
+        if VERSION <= float(mop_db['version']):
             print(update_init)
-            mop_db.close()
             sys.exit()
-        print(str(mop_db['version']) + '=>' + str(VERSION))
-        import requests
-        #url = 'https://raw.githubusercontent.com/underthestars-zhy/MacOS-Plugins/main/update.json'
-        url = mop_db['update_url']
-        update_json = requests.get(url, allow_redirects=True)
-        if not update_json.status_code:
-            print(http_error)
-            sys.exit()
-        update_code = dict(update_json.json())
-        print(update_find)
-        for key_version in update_code.keys():
-            version_code = []
-            if key_version == 'README':
-                continue
-            if float(key_version) <= mop_db['version'] or float(key_version) > VERSION:
-                continue
-            else:
-                version_code.append(key_version)
-        for version_command in version_code:
-            for command in update_code[version_command]['db_set']:
-                mop_db[command[0]] = command[1]
+        print(update_text)
+        print(str(mop_db['version'])+' => '+str(VERSION))
+        if float(mop_db['version']) < 1.1:
+            mop_db['json_url'] = 'https://raw.githubusercontent.com/underthestars-zhy/MacOS-Plugins/main/packet.json'
+            mop_db['update_url'] = 'https://raw.githubusercontent.com/underthestars-zhy/MacOS-Plugins/main/update.json'
+        if float(mop_db['version']) < 1.2:
+            mop_db['update_url'] = None
+            all_file = os.listdir(mop_db_path)
+            for file_name in all_file:
+                if not str(file_name).endswith('.py') or file_name == 'mop.py' or file_name == 'mop.db':
+                    continue
+                url = mop_db['json_url']
+                import requests
+                packets_json = requests.get(url, allow_redirects=True)
+                if packets_json.raise_for_status() != None:
+                    print(http_error)
+                    sys.exit()
+                file_name = file_name[:-3]
+                all_plugins = packets_json.json()
+                mop_db[file_name+'_readme_cn'] = all_plugins[file_name]['readme_cn']
+                mop_db[file_name + '_readme_en'] = all_plugins[file_name]['readme_en']
+        print(successful)
+        if mop_db['language'] == 'cn':
+            print('- 支持查看插件说明\n- 优化')
+        else:
+            print('- Support for viewing plug-in instructions\n- optimisation')
         mop_db['version'] = VERSION
         mop_db.close()
-        print(update_code['README'])
-        print(successful)
-
-
-
 
 
 # 语言设置
@@ -175,7 +184,7 @@ if args.install and mop_db_file:
     mop_db = shelve.open(mop_db_path + 'mop')
     url = mop_db['json_url']
     packets_json = requests.get(url, allow_redirects=True)
-    if not packets_json.status_code:
+    if packets_json.raise_for_status() != None:
         print(http_error)
         sys.exit()
     packets = packets_json.json()
@@ -185,26 +194,28 @@ if args.install and mop_db_file:
             print(plugin_find)
             find = True
             plugin_dic = packets[packet]
-            py_file = packet+".py"
+            py_file = packet + ".py"
             break
     if not find:
         print(plugin_error)
         sys.exit()
     plugin_url = plugin_dic['url']
     plugin_file = requests.get(plugin_url, allow_redirects=True)
-    if not plugin_file.status_code:
+    if plugin_file.raise_for_status() != None:
         print(http_error)
         sys.exit()
     file = open(py_file, 'w')
     file.write(plugin_file.text)
     file.close()
     print(plugin_file)
-    mop_db[str(packet)+"_version"] = plugin_dic['version']
+    mop_db[str(packet) + "_version"] = plugin_dic['version']
+    mop_db[str(packet) + '_readme_cn'] = plugin_dic['readme_cn']
+    mop_db[str(packet) + '_readme_en'] = plugin_dic['readme_en']
     print(plugin_plugins)
     if plugin_dic['plugins']:
         pip_lists = plugin_dic['plugins']
         for pip_name in pip_lists:
-            os.system('pip3 install '+pip_name)
+            os.system('pip3 install ' + pip_name)
         print(pip_true)
     else:
         print(pip_nothing)
@@ -214,10 +225,21 @@ if args.install and mop_db_file:
         print(db_set_true)
     else:
         print(db_set_nothing)
+    mop_db[str(args.install[0]).lower() + 'readme_cn'] = plugin_dic['readme_cn']
+    mop_db[str(args.install[0]).lower() + 'readme_en'] = plugin_dic['readme_en']
     mop_db.close()
     file = open(os.path.expanduser('~/.zshrc'), 'a')
-    command = 'alias ' + plugin_dic["shortcut_name"] + '="python3 ' + mop_db_path +py_file + '"\n'
+    command = 'alias ' + plugin_dic["shortcut_name"] + '="python3 ' + mop_db_path + py_file + '"\n'
     file.write(command)
     file.close()
-    print(plugin_command+plugin_dic['shortcut_name'])
+    print(plugin_command + plugin_dic['shortcut_name'])
     print(successful)
+
+# 查看插件README
+if args.readme and mop_db_file:
+    print(args.readme[0] + '-README')
+    mop_db = shelve.open(mop_db_path + 'mop')
+    if mop_db['language'] == 'en':
+        print(mop_db[args.readme[0] + '_readme_en'])
+    else:
+        print(mop_db[args.readme[0] + '_readme_cn'])
