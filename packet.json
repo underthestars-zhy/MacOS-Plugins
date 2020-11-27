@@ -1,11 +1,14 @@
 {
     "rename_tools": {
         "url": "https://raw.githubusercontent.com/underthestars-zhy/MOP-ReName-Tools/main/rename_tools.py",
-        "version": 1.0,
+        "version": 1.1,
         "plugins": [],
         "shortcut_name": "prm",
         "db_set": [],
-        "update": [],
-        "readme"
+        "update": {
+            "1.1": {}
+        },
+        "readme_cn": "\u4f7f\u7528prm -r_num <\u6e90\u6587\u4ef6\u5939> <\u73b0\u6587\u4ef6\u5939> <\u8d77\u59cb\u6570\u5b57>\u91cd\u547d\u540d\u6587\u4ef6\n<\u6e90\u6587\u4ef6\u5939> <\u73b0\u6587\u4ef6\u5939>\u53ef\u91cd\u540d\n<\u8d77\u59cb\u6570\u5b57>\u53ef\u4e0d\u586b\u5199\uff0c\u9ed8\u8ba40",
+        "readme_en": "Rename files using PRM-R < source folder > current folder > < start number > \n< Source Folder > > current folder > repeatable name\n\u201cstart number\u201d can not be filled in, the Default 0"
     }
 }
