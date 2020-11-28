@@ -43,5 +43,5 @@
 
 ## :globe_with_meridians: 推荐插件
 
-+ [sync](https://github.com/underthestars/sync-tools)
-+ [re_name tools](https://github.com/underthestars/MOP-ReName-Tools)
++ [sync](https://github.com/underthestars-zhy/sync-tools)
++ [re_name tools](https://github.com/underthestars-zhy/MOP-ReName-Tools)
