@@ -38,7 +38,7 @@
         "readme_en": "Rename files using PRM-R < source folder > current folder > < start number > \n< Source Folder > > current folder > repeatable name\n\u201cstart number\u201d can not be filled in, the Default 0"
     },
     "sync": {
-        "url": "https://raw.githubusercontent.com/underthestars-zhy/MOP-ReName-Tools/main/sync.py",
+        "url": "https://raw.githubusercontent.com/underthestars-zhy/sync-tools/main/sync.py",
         "version": 1.1,
         "plugins": [],
         "shortcut_name": "pysync",
