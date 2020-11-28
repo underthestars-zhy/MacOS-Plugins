@@ -40,8 +40,10 @@
 - [ ] 支持删除插件
 - [X] ~支持更新插件~
 - [ ] 重构json URL
+- [ ] 支持轻应用(Golang实现)
 
 ## :globe_with_meridians: 推荐插件
 
 + [sync](https://github.com/underthestars-zhy/sync-tools)
 + [re_name tools](https://github.com/underthestars-zhy/MOP-ReName-Tools)
++ [tubedown](https://github.com/underthestars-zhy/tuberdown)
