@@ -39,4 +39,9 @@
 - [ ] 重构更新代码
 - [ ] 支持删除插件
 - [X] ~支持更新插件~
-- [ ] 将json URL设置全局应用
+- [ ] 重构json URL
+
+## :globe_with_meridians: 推荐插件
+
++ [sync](https://github.com/underthestars/sync-tools)
++ [re_name tools](https://github.com/underthestars/MOP-ReName-Tools)
