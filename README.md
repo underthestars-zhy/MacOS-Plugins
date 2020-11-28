@@ -1,5 +1,9 @@
 # MacOS-Plugins
-一款专门为Mac OS 11开发的程序员快捷工具
+
+> 一款专门为Mac OS 11开发的程序员快捷工具<br>
+
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/underthestars-zhy/MacOS-Plugins)
+
 
 ## :zap: 初始化仓库
 
