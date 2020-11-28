@@ -51,5 +51,20 @@
         "update": {},
         "readme_cn": "\u4f7f\u7528pysync -s \u540c\u6b65\u6587\u4ef6\n\u4f7f\u7528pysync -dir\u8bbe\u7f6e\u540c\u6b65\u6587\u4ef6\u5939",
         "readme_en": "use pysync -s SYNC file\nuse pysync -dir Set the folder to sync"
+    },
+    "tubedown": {
+        "url": "https://raw.githubusercontent.com/underthestars-zhy/tubedown/main/tubedown.py",
+        "version": 1.0,
+        "plugins": [],
+        "shortcut_name": "tube",
+        "db_set": [
+            [
+                "save_path",
+                ""
+            ]
+        ],
+        "update": {},
+        "readme_cn": "\u4f7f\u7528tube -d (\u50a8\u5b58\u8def\u5f84) \u4e0b\u8f7d\u89c6\u9891\u5e76\u50a8\u5b58\n\u4f7f\u7528tube -dir <filename>\u8bbe\u7f6e\u9ed8\u8ba4\u50a8\u5b58\u6587\u4ef6\u5939",
+        "readme_en": "Download and store video using tube -d (store path) \nSet the default storage folder using tube -dir <filename>"
     }
 }
