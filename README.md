@@ -7,7 +7,6 @@
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/underthestars-zhy/MacOS-Plugins)
 ![GitHub all releases](https://img.shields.io/github/downloads/underthestars-zhy/MacOS-Plugins/total)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/y/underthestars-zhy/MacOS-Plugins)
-![GitHub Repo stars](https://img.shields.io/github/stars/underthestars-zhy/MacOS-Plugins?style=social)
 
 ## :zap: 初始化仓库
 
