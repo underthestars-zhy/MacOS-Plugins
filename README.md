@@ -44,6 +44,6 @@
 
 ## :globe_with_meridians: 推荐插件
 
-+ [sync](https://github.com/underthestars-zhy/sync-tools)
-+ [re_name tools](https://github.com/underthestars-zhy/MOP-ReName-Tools)
-+ [tubedown](https://github.com/underthestars-zhy/tubedown)
++ 轻松**快照**文件: [sync](https://github.com/underthestars-zhy/sync-tools)
++ 按照自己喜欢的方式**重命名**文件: [re_name tools](https://github.com/underthestars-zhy/MOP-ReName-Tools)
++ 下载**YouTube**视频: [tubedown](https://github.com/underthestars-zhy/tubedown)
