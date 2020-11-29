@@ -3,7 +3,11 @@
 > 一款专门为Mac OS 11开发的程序员快捷工具<br>
 
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/underthestars-zhy/MacOS-Plugins)
-
+![GitHub](https://img.shields.io/github/license/underthestars-zhy/MacOS-Plugins)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/underthestars-zhy/MacOS-Plugins)
+![GitHub all releases](https://img.shields.io/github/downloads/underthestars-zhy/MacOS-Plugins/total)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/y/underthestars-zhy/MacOS-Plugins)
+![GitHub Repo stars](https://img.shields.io/github/stars/underthestars-zhy/MacOS-Plugins?style=social)
 
 ## :zap: 初始化仓库
 
