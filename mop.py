@@ -1,5 +1,4 @@
 #! /usr/local/bin/python3
-
 #  Copyright (c) 2020.
 #  You can freely change the code part, but you must follow the MIT protocol
 #  You cannot delete any information about UTS
@@ -11,9 +10,10 @@ import os
 import shelve
 import sys
 import json
+import webbrowser
 
 # 常量设置
-VERSION = 1.2
+VERSION = 1.3
 
 # 多语言设置
 file_lists = os.listdir(os.path.expanduser('~'))
@@ -22,6 +22,7 @@ if 'mop.json' in file_lists:
     mop_db_path = json.load(file)
     file.close()
     mop_db = shelve.open(mop_db_path + 'mop')
+    plugin_list = mop_db['plugins']
     if mop_db['language'] == 'en':
         init_help = 'Initialize or update in the current folder'
         install_help = 'Installation plug-in'
@@ -44,6 +45,11 @@ if 'mop.json' in file_lists:
         update_find = 'FIND THE UPDATE FILE!'
         readme_help = 'View the plugin help'
         welcome_flag = False
+        url_help = 'Modify the download URL of the json file'
+        url_error = 'The URL could not be queried'
+        update_help = 'Update Plugin'
+        url_arg_error = 'Unable to Parse instruction. Do you want to see the help documentation?'
+        install_re_install = 'This plug-in has been downloaded and can not be downloaded repeatedly'
     elif mop_db['language'] == 'cn':
         init_help = '初始化或者更新当前文件夹'
         install_help = '安装插件'
@@ -68,6 +74,11 @@ if 'mop.json' in file_lists:
         update_find = '查找到更新文件!'
         readme_help = '查看插件帮助'
         welcome_flag = False
+        url_help = '修改json文件的下载URL'
+        update_help = '更新插件'
+        url_error = '无法查询到相应URL'
+        url_arg_error = '无法解析指令，是否需要查看帮助文档?'
+        install_re_install = '此插件已经下载，不能重复下载'
     mop_db.close()
     mop_db_file = True
 else:
@@ -78,14 +89,20 @@ else:
     welcome = 'Welcome-MOP\nYou need to initialize the warehouse first'
     language_help = 'Switch language'
     not_init_set_error = 'Please initialize first'
+    readme_help = 'View the plugin help'
+    url_help = 'Modify the download URL of the json file'
+    update_help = 'Update Plugin'
 
 # 命令参数设置
 parser = argparse.ArgumentParser(description='MacOS 11 Plugins Install Tool')
 
-parser.add_argument('-init', type=str, help=init_help, choices=['install', 'update'], nargs=1)  # 初始化/更新命令
+parser.add_argument('-init', type=str, help=init_help, choices=['install', 'update', 'uninstall'], nargs=1)  # 初始化/更新命令
 parser.add_argument('-install', type=str, help=install_help, nargs=1)  # 安装命令
 parser.add_argument('-language', type=str, help=language_help, nargs=1, choices=['en', 'cn'])  # 更换语言
 parser.add_argument('-readme', type=str, help=readme_help, nargs=1)  # 查看插件帮助
+parser.add_argument('-url', type=str, help=url_help, nargs=1, choices=plugin_list)  # 更新URL
+parser.add_argument('-update', type=str, help=update_help, nargs=1)  # 更新插件
+parser.add_argument('-clip', type=str, help=update_help, nargs=1)  # 安装轻app
 
 args = parser.parse_args()
 
@@ -96,66 +113,50 @@ if welcome_flag:
 # 初始化/更新
 if args.init:
     if args.init[0] == 'install':
+
         mop_db = shelve.open('mop')
-        mop_db['version'] = VERSION
+        mop_db['version'] = VERSION # 设置当前版本
+
         print('initializing...'.upper())
+
         try:
             import resource
         except:
             os.system('pip3 install resource')
         mop_db['resource'] = True
+
         print('resource installed successfully...')
         print('create Shortcut...')
+
         file = open(os.path.expanduser('~/.zshrc'), 'a')
         file.write('alias mop="python3 ' + os.path.abspath('.') + '/mop.py"\n')
         file.close()
+
         print('选择语言|Choose a language')
         print('en or cn')
-        mop_db['language'] = input()
+        mop_db['language'] = input('Language/语言: ')
         language = mop_db['language']
+
         mop_db['json_url'] = 'https://raw.githubusercontent.com/underthestars-zhy/MacOS-Plugins/main/packet.json'
+        mop_db['url_sets'] = {
+            "main": 'https://raw.githubusercontent.com/underthestars-zhy/MacOS-Plugins/main/packet.json',
+            "main_cdn": 'https://cdn.jsdelivr.net/gh/underthestars-zhy/MacOS-Plugins/packet.json'
+        }
+        mop_db['plugins'] = ['all']
+
         mop_db.close()
+
         file = open(os.path.expanduser('~/mop.json'), 'w')  # 为后续获取DB数据库路径做准备
         path_ = os.path.abspath('.') + '/'
         json.dump(path_, file, indent=4)
         file.close()
+
         if language == 'en':
             print('success'.upper())
         elif language == 'cn':
             print('成功')
     if args.init[0] == 'update' and mop_db_file:
-        mop_db = shelve.open(mop_db_path + 'mop')
-        if VERSION <= float(mop_db['version']):
-            print(update_init)
-            sys.exit()
-        print(update_text)
-        print(str(mop_db['version'])+' => '+str(VERSION))
-        if float(mop_db['version']) < 1.1:
-            mop_db['json_url'] = 'https://raw.githubusercontent.com/underthestars-zhy/MacOS-Plugins/main/packet.json'
-            mop_db['update_url'] = 'https://raw.githubusercontent.com/underthestars-zhy/MacOS-Plugins/main/update.json'
-        if float(mop_db['version']) < 1.2:
-            mop_db['update_url'] = None
-            all_file = os.listdir(mop_db_path)
-            for file_name in all_file:
-                if not str(file_name).endswith('.py') or file_name == 'mop.py' or file_name == 'mop.db':
-                    continue
-                url = mop_db['json_url']
-                import requests
-                packets_json = requests.get(url, allow_redirects=True)
-                if packets_json.raise_for_status() != None:
-                    print(http_error)
-                    sys.exit()
-                file_name = file_name[:-3]
-                all_plugins = packets_json.json()
-                mop_db[file_name+'_readme_cn'] = all_plugins[file_name]['readme_cn']
-                mop_db[file_name + '_readme_en'] = all_plugins[file_name]['readme_en']
-        print(successful)
-        if mop_db['language'] == 'cn':
-            print('- 支持查看插件说明\n- 优化')
-        else:
-            print('- Support for viewing plug-in instructions\n- optimisation')
-        mop_db['version'] = VERSION
-        mop_db.close()
+        pass
 
 
 # 语言设置
@@ -179,61 +180,19 @@ if args.language:
 
 # 安装插件
 if args.install and mop_db_file:
-    import requests
+    mop_db = shelve.open(mop_db_path + 'mop') # 打开数据库
 
-    mop_db = shelve.open(mop_db_path + 'mop')
-    url = mop_db['json_url']
-    packets_json = requests.get(url, allow_redirects=True)
-    if packets_json.raise_for_status() != None:
-        print(http_error)
-        sys.exit()
-    packets = packets_json.json()
-    find = False
-    for packet in packets.keys():
-        if packet == str(args.install[0]).lower():
-            print(plugin_find)
-            find = True
-            plugin_dic = packets[packet]
-            py_file = packet + ".py"
-            break
-    if not find:
-        print(plugin_error)
-        sys.exit()
-    plugin_url = plugin_dic['url']
-    plugin_file = requests.get(plugin_url, allow_redirects=True)
-    if plugin_file.raise_for_status() != None:
-        print(http_error)
-        sys.exit()
-    file = open(py_file, 'w')
-    file.write(plugin_file.text)
-    file.close()
-    print(plugin_file)
-    mop_db[str(packet) + "_version"] = plugin_dic['version']
-    mop_db[str(packet) + '_readme_cn'] = plugin_dic['readme_cn']
-    mop_db[str(packet) + '_readme_en'] = plugin_dic['readme_en']
-    print(plugin_plugins)
-    if plugin_dic['plugins']:
-        pip_lists = plugin_dic['plugins']
-        for pip_name in pip_lists:
-            os.system('pip3 install ' + pip_name)
-        print(pip_true)
-    else:
-        print(pip_nothing)
-    if plugin_dic['db_set']:
-        for db_dicts in plugin_dic['db_set']:
-            mop_db[db_dicts[0]] = mop_db[db_dicts[1]]
-        print(db_set_true)
-    else:
-        print(db_set_nothing)
-    mop_db[str(args.install[0]).lower() + 'readme_cn'] = plugin_dic['readme_cn']
-    mop_db[str(args.install[0]).lower() + 'readme_en'] = plugin_dic['readme_en']
-    mop_db.close()
-    file = open(os.path.expanduser('~/.zshrc'), 'a')
-    command = 'alias ' + plugin_dic["shortcut_name"] + '="python3 ' + mop_db_path + py_file + '"\n'
-    file.write(command)
-    file.close()
-    print(plugin_command + plugin_dic['shortcut_name'])
-    print(successful)
+    plugins_list = mop_db['plugins'] # 获取插件列表
+    down_plugin_list = [] # 需要下载的插件列表
+
+    for plugin_name in args.install:  # 遍历所有传入的插件
+        if plugin_name in plugins_list:
+            print(install_re_install + ' => ' + plugin_name)
+        else:
+            down_plugin_list.append(plugin_name)
+
+    import resource # 加载json文件下载模块
+
 
 # 查看插件README
 if args.readme and mop_db_file:
@@ -243,3 +202,65 @@ if args.readme and mop_db_file:
         print(mop_db[args.readme[0] + '_readme_en'])
     else:
         print(mop_db[args.readme[0] + '_readme_cn'])
+
+
+# 修改json文件url
+if args.url and mop_db_file:
+
+    # 新增url
+    if args.url[0] == 'n': # 新增自定义URL
+        new_url = input('URL: ') # 输入URL
+        new_url_name = input('Name: ') # 输入名称
+
+        mop_db = shelve.open(mop_db_path + 'mop')
+        url_dict = dict(mop_db['url_sets']) # 加载数据库字典到本地
+        url_dict[new_url_name] = new_url
+        mop_db['url_sets'] = url_dict # save
+
+        print(successful)
+    elif args.url[0] == 'd': # 删除自定义URL
+        del_url_name = input('Name: ') # 输入删除链接的名称
+
+        mop_db = shelve.open(mop_db_path + 'mop')
+        url_dict = dict(mop_db['url_sets']) # 加载数据库字典到本地
+
+        if del_url_name not in url_dict.keys():
+            print(url_error)
+            sys.exit()
+
+        del url_dict[del_url_name] # 删除链接
+        mop_db['url_sets'] = url_dict # save
+
+        print(successful)
+    elif args.url[0] == 'e': # 修改自定义URL
+        edit_url_name = input('Name: ')  # 输入需要修改自定义URL的名称
+        edit_url = input('NewUrl: ') # 新URL
+
+        mop_db = shelve.open(mop_db_path + 'mop')
+        url_dict = dict(mop_db['url_sets'])  # 加载数据库字典到本地
+
+        if edit_url_name not in url_dict.keys():
+            print(url_error)
+            sys.exit()
+
+        url_dict[edit_url_name] = edit_url # 更新URL
+
+        mop_db['url_sets'] = url_dict  # save
+
+        print(successful)
+    elif args.url[0] == 'l': # 列出所有URL
+        mop_db = shelve.open(mop_db_path + 'mop')
+        url_dict = dict(mop_db['url_sets'])  # 加载数据库字典到本地
+        mop_db['url_sets'] = url_dict  # 关闭数据库
+
+        for name, url in url_dict:
+            print(name + ' => ' + url)
+    else:
+        print(url_arg_error)
+        if input('y/n> ').lower() == 'y':
+            webbrowser.open('https://mop.uts.ski/#/json_url') # 打开帮助文档
+        else:
+            sys.exit() # 退出程序
+
+# 更新插件
+if args.update and mop_db_file:
