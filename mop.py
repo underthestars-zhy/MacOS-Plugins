@@ -53,6 +53,7 @@ if 'mop.json' in file_lists:
         install_no_down_plugins = 'There are no plugins to download'
         install_soon = 'Download soon: '
         url_del_def_error = 'Deleting the default URL is not allowed'
+        url_def_not_in = 'The URL can not be found in the URL list'
     elif mop_db['language'] == 'cn':
         init_help = '初始化或者更新当前文件夹'
         install_help = '安装插件'
@@ -85,6 +86,7 @@ if 'mop.json' in file_lists:
         install_no_down_plugins = '没有要下载的插件'
         install_soon = '即将下载: '
         url_del_def_error = '不允许删除默认URL'
+        url_def_not_in = '无法在URL列表找到相应URL'
     mop_db.close()
     mop_db_file = True
 else:
@@ -291,7 +293,7 @@ if args.url and mop_db_file:
         mop_db = shelve.open(mop_db_path + 'mop')
 
         url_dict = dict(mop_db['url_sets'])  # 加载数据库字典到本地
-        mop_db['url_sets'] = url_dict  # 关闭数据库
+        mop_db.close() # 关闭链接
         default_url = mop_db['json_url'] # 默认URL
 
         default = '' # 是否是默认URL
@@ -303,7 +305,22 @@ if args.url and mop_db_file:
                 default = ''
             print(name + ' => ' + url + default)
 
-        mop_db.close() # 关闭链接
+        print(successful)
+    elif args.url[0] == 'c': # 设置默认URL
+        mop_db = shelve.open(mop_db_path + 'mop')
+
+        url_dict = dict(mop_db['url_sets'])  # 加载数据库字典到本地
+
+        default_url_name = input('Name: ') # 新默认URL名称
+
+        if default_url_name not in url_dict.keys(): # 检测是否在URL列表中
+            print(url_def_not_in)
+            sys.exit() # 不存在退出
+
+        mop_db['json_url'] = url_dict[default_url_name] # 设置默认URL
+
+        print(successful)
+        mop_db.close()  # 关闭链接
     else:
         print(url_arg_error)
         if input('y/n> ').lower() == 'y':
