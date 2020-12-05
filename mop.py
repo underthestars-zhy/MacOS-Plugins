@@ -50,6 +50,9 @@ if 'mop.json' in file_lists:
         update_help = 'Update Plugin'
         url_arg_error = 'Unable to Parse instruction. Do you want to see the help documentation?'
         install_re_install = 'This plug-in has been downloaded and can not be downloaded repeatedly'
+        install_no_down_plugins = 'There are no plugins to download'
+        install_soon = 'Download soon: '
+        url_del_def_error = 'Deleting the default URL is not allowed'
     elif mop_db['language'] == 'cn':
         init_help = '初始化或者更新当前文件夹'
         install_help = '安装插件'
@@ -79,6 +82,9 @@ if 'mop.json' in file_lists:
         url_error = '无法查询到相应URL'
         url_arg_error = '无法解析指令，是否需要查看帮助文档?'
         install_re_install = '此插件已经下载，不能重复下载'
+        install_no_down_plugins = '没有要下载的插件'
+        install_soon = '即将下载: '
+        url_del_def_error = '不允许删除默认URL'
     mop_db.close()
     mop_db_file = True
 else:
@@ -184,24 +190,48 @@ if args.install and mop_db_file:
 
     plugins_list = mop_db['plugins'] # 获取插件列表
     down_plugin_list = [] # 需要下载的插件列表
+    down_url = mop_db['json_url'] # json文件URL
+    url_dict = mop_db['url_sets'] # jsonURL字典
 
     for plugin_name in args.install:  # 遍历所有传入的插件
-        if plugin_name in plugins_list:
-            print(install_re_install + ' => ' + plugin_name)
+        if str(plugin_name).lower().startswith('url:'):
+            url_name = str(plugin_name).split(':')[1] # url名称
+            down_url = url_dict[url_name] # 更新json文件URL
+
+            continue # 返回
+
+        if plugin_name in plugins_list: # 检查插件是否已经下载过
+            print(install_re_install + ' => ' + plugin_name) # 错误信息
         else:
-            down_plugin_list.append(plugin_name)
+            down_plugin_list.append(plugin_name) # 将文件添加到下载列表
+
+    if not down_plugin_list: # 检测下载列表是否为空
+        print('\n' + install_no_down_plugins + '\n')
+        sys.exit() # 空则退出程序
+
+    print('\n-----------------------\n') # 分割线
+
+    for plugin_name in down_plugin_list: # 输出所有要下载的插件名称
+        print(install_soon + plugin_name)
+
+    print('\n-----------------------\n')  # 分割线
 
     import resource # 加载json文件下载模块
+
 
 
 # 查看插件README
 if args.readme and mop_db_file:
     print(args.readme[0] + '-README')
+
     mop_db = shelve.open(mop_db_path + 'mop')
+
     if mop_db['language'] == 'en':
         print(mop_db[args.readme[0] + '_readme_en'])
     else:
         print(mop_db[args.readme[0] + '_readme_cn'])
+
+    mop_db.close()  # 关闭链接
 
 
 # 修改json文件url
@@ -218,20 +248,28 @@ if args.url and mop_db_file:
         mop_db['url_sets'] = url_dict # save
 
         print(successful)
+        mop_db.close()  # 关闭链接
     elif args.url[0] == 'd': # 删除自定义URL
         del_url_name = input('Name: ') # 输入删除链接的名称
 
         mop_db = shelve.open(mop_db_path + 'mop')
         url_dict = dict(mop_db['url_sets']) # 加载数据库字典到本地
+        default_url = mop_db['json_url']  # 默认URL
 
         if del_url_name not in url_dict.keys():
             print(url_error)
             sys.exit()
 
+        del_url = url_dict[del_url_name] # 获取删除URL
+        if del_url == default_url: # 是否是默认URL
+            print(url_del_def_error)
+            sys.exit() # 不允许删除默认URL
+
         del url_dict[del_url_name] # 删除链接
         mop_db['url_sets'] = url_dict # save
 
         print(successful)
+        mop_db.close()  # 关闭链接
     elif args.url[0] == 'e': # 修改自定义URL
         edit_url_name = input('Name: ')  # 输入需要修改自定义URL的名称
         edit_url = input('NewUrl: ') # 新URL
@@ -248,13 +286,24 @@ if args.url and mop_db_file:
         mop_db['url_sets'] = url_dict  # save
 
         print(successful)
+        mop_db.close()  # 关闭链接
     elif args.url[0] == 'l': # 列出所有URL
         mop_db = shelve.open(mop_db_path + 'mop')
+
         url_dict = dict(mop_db['url_sets'])  # 加载数据库字典到本地
         mop_db['url_sets'] = url_dict  # 关闭数据库
+        default_url = mop_db['json_url'] # 默认URL
+
+        default = '' # 是否是默认URL
 
         for name, url in url_dict:
-            print(name + ' => ' + url)
+            if url == default_url: # 检测当前URL是否与默认URL匹配
+                default = ' (default)'
+            else:
+                default = ''
+            print(name + ' => ' + url + default)
+
+        mop_db.close() # 关闭链接
     else:
         print(url_arg_error)
         if input('y/n> ').lower() == 'y':
