@@ -43,7 +43,8 @@
 - [ ] 支持删除插件
 - [X] ~支持更新插件~
 - [ ] 重构json URL
-- [ ] 支持轻应用(Golang实现)
+- [ ] 支持轻应用
+- [ ] 支持swift插件
 
 ## :globe_with_meridians: 推荐插件
 
