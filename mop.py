@@ -58,6 +58,7 @@ if 'mop.json' in file_lists:
         url_new_error = 'Duplicate Custom URLS are not allowed to be created'
         install_url_success = 'Url request successful'
         install_now = 'Start the installation=> '
+        readme_error = 'Unable to find: '
     elif mop_db['language'] == 'cn':
         init_help = '初始化或者更新当前文件夹'
         install_help = '安装插件'
@@ -94,6 +95,7 @@ if 'mop.json' in file_lists:
         url_new_error = '不允许创建重复自定义URL'
         install_url_success = 'URL请求成功'
         install_now = '开始安装=> '
+        readme_error = '无法找到: '
     mop_db.close()
     mop_db_file = True
 else:
@@ -115,7 +117,7 @@ parser = argparse.ArgumentParser(description='MacOS 11 Plugins Install Tool')
 parser.add_argument('-init', type=str, help=init_help, choices=['install', 'update', 'uninstall'], nargs=1)  # 初始化/更新命令
 parser.add_argument('-install', type=str, help=install_help, nargs='*')  # 安装命令
 parser.add_argument('-language', type=str, help=language_help, nargs=1, choices=['en', 'cn'])  # 更换语言
-parser.add_argument('-readme', type=str, help=readme_help, nargs=1)  # 查看插件帮助
+parser.add_argument('-readme', type=str, help=readme_help, nargs='*')  # 查看插件帮助
 parser.add_argument('-url', type=str, help=url_help, nargs=1)  # 更新URL
 parser.add_argument('-update', type=str, help=update_help, nargs='*', choices=plugin_list)  # 更新插件
 parser.add_argument('-clip', type=str, help=update_help, nargs=1)  # 安装轻app
@@ -275,6 +277,7 @@ if args.install and mop_db_file:
         print('- Database prefix name: ' + str(packet_db_name))
         print('- Database operation: ' + str(packet_db_set))
 
+        print('README: ')
         # 输出插件简介
         if str(mop_db['language']) == 'cn':
             print(packet_readme_cn)
@@ -328,19 +331,28 @@ if args.install and mop_db_file:
 
         print(successful)
 
-    mop_db.close() # 关闭数据库
+    print('\n-----------------------\n')  # 分割线
+
+    mop_db.close()  # 关闭数据库
     print('Done.')
 
 # 查看插件README
 if args.readme and mop_db_file:
-    print(args.readme[0] + '-README')
+    print('\n-----------------------\n')  # 分割线
+    mop_db = shelve.open(mop_db_path + 'mop')  # 打开数据库
 
-    mop_db = shelve.open(mop_db_path + 'mop')
+    for plugin_name in args.readme:
+        if plugin_name not in mop_db['plugins']:  # 检测是否在插件列表中
+            print(readme_error + plugin_name)
+            print('\n-----------------------\n')  # 分割线
+            continue
 
-    if mop_db['language'] == 'en':
-        print(mop_db[args.readme[0] + '_readme_en'])
-    else:
-        print(mop_db[args.readme[0] + '_readme_cn'])
+        print(plugin_name + '-README: ')
+        if mop_db['language'] == 'en':
+            print(mop_db[mop_db['db_name'][plugin_name] + 'readme_en'])
+        else:
+            print(mop_db[mop_db['db_name'][plugin_name] + 'readme_cn'])
+        print('\n-----------------------\n')  # 分割线
 
     mop_db.close()  # 关闭链接
 
