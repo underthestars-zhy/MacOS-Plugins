@@ -231,12 +231,12 @@ if args.install and mop_db_file:
 
     packet_r = requests.get(down_url)  # 获取一个下载对象
 
-    print(down_url)  # 输出下载URL
+    print('URL: ' + down_url)  # 输出下载URL
 
     packet_r.raise_for_status()  # 检测链接有效性
     print(install_url_success)
 
-    packets_dict = dict(json.load(packet_r.json()))  # 将json内容保存
+    packets_dict = dict(packet_r.json())  # 将json内容保存
 
     packet_r.close()  # 关闭下载对象
 
@@ -254,8 +254,8 @@ if args.install and mop_db_file:
 
         packet_url = packet_dict['url']  # 插件下载URL
         packet_file_name = packet_dict['file_name']  # 插件保存文件名
-        packet_code_language = packet_url['code_language']  # 插件语言
-        packet_code_language_version = packet_url['code_language_version']  # 插件语言所需版本
+        packet_code_language = packet_dict['code_language']  # 插件语言
+        packet_code_language_version = packet_dict['code_language_version']  # 插件语言所需版本
         packet_alias = packet_dict['alias']  # 插件别名
         packet_version = packet_dict['version']  # 插件版本
         packet_pip = packet_dict['pip']  # 插件模块列表
@@ -288,10 +288,8 @@ if args.install and mop_db_file:
         # TODO: 检查插件文件是否已经存在在目录中
 
         # 写入插件
-        plugin_write = open(mop_db_path + packet_file_name, 'wb')
-        for chunk in plugin_r.content(100000):
-            plugin_write.write(chunk)
-        plugin_write.close()
+        with open(mop_db_path + packet_file_name, "wb") as code:
+            code.write(plugin_r.content)
 
         plugin_r.close()  # 关闭链接
 
