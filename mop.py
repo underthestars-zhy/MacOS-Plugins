@@ -97,6 +97,7 @@ if 'mop.json' in file_lists:
     mop_db.close()
     mop_db_file = True
 else:
+    plugin_list = []
     mop_db_file = False
     welcome_flag = True
     init_help = 'Initialize or update in the current folder'
