@@ -408,7 +408,6 @@ if args.url and mop_db_file:
         mop_db = shelve.open(mop_db_path + 'mop')
 
         url_dict = dict(mop_db['url_sets'])  # 加载数据库字典到本地
-        mop_db.close()  # 关闭链接
         default_url = mop_db['json_url']  # 默认URL
 
         default = ''  # 是否是默认URL
@@ -420,6 +419,7 @@ if args.url and mop_db_file:
                 default = ''
             print(name + ' => ' + url + default)
 
+        mop_db.close()  # 关闭链接
         print(successful)
     elif args.url[0] == 'c':  # 设置默认URL
         mop_db = shelve.open(mop_db_path + 'mop')
