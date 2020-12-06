@@ -412,7 +412,7 @@ if args.url and mop_db_file:
 
         default = ''  # 是否是默认URL
 
-        for name, url in url_dict:
+        for name, url in url_dict.items():
             if url == default_url:  # 检测当前URL是否与默认URL匹配
                 default = ' (default)'
             else:
@@ -430,7 +430,7 @@ if args.url and mop_db_file:
 
         if default_url_name not in url_dict.keys():  # 检测是否在URL列表中
             print(url_def_not_in)
-            sys.exit() # 不存在退出
+            sys.exit()  # 不存在退出
 
         mop_db['json_url'] = url_dict[default_url_name]  # 设置默认URL
 
