@@ -41,6 +41,7 @@
     },
     "sync": {
         "url": "https://raw.githubusercontent.com/underthestars-zhy/sync-tools/main/sync.py",
+        "clip": "https://raw.githubusercontent.com/underthestars-zhy/sync-tools/main/clip.py",
         "file_name": "sync.py",
         "code_language": "python",
         "code_language_version": "3.8~3.10",
@@ -62,9 +63,14 @@
     },
     "tubedown": {
         "url": "https://raw.githubusercontent.com/underthestars-zhy/tubedown/main/tubedown.py",
-        "version": 1.0,
-        "plugins": [],
-        "shortcut_name": "tube",
+        "file_name": "tubedown.py",
+        "code_language": "python",
+        "code_language_version": "3.8~3.10",
+        "alias": "tube",
+        "version": 1.1,
+        "pip": [
+            "pytube"
+        ],
         "db_set": [
             [
                 "save_path",
