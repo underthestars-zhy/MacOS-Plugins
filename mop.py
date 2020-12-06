@@ -24,6 +24,7 @@ if 'mop.json' in file_lists:
     mop_db = shelve.open(mop_db_path + 'mop')
     plugin_list = list(mop_db['plugins'])  # 获得插件列表(为update提供)
     plugin_list.append('all')  # 更新所有
+    remove_plugin_list = list(mop_db['plugins'])  # remove占用
     if mop_db['language'] == 'en':
         init_help = 'Initialize or update in the current folder'
         install_help = 'Installation plug-in'
@@ -59,6 +60,9 @@ if 'mop.json' in file_lists:
         install_url_success = 'Url request successful'
         install_now = 'Start the installation=> '
         readme_error = 'Unable to find: '
+        clip_help = 'install clip app'
+        remove_help = 'Delete app'
+        clip_arg_error = 'Incoming parameter error'
     elif mop_db['language'] == 'cn':
         init_help = '初始化或者更新当前文件夹'
         install_help = '安装插件'
@@ -96,10 +100,15 @@ if 'mop.json' in file_lists:
         install_url_success = 'URL请求成功'
         install_now = '开始安装=> '
         readme_error = '无法找到: '
+        clip_help = '安装轻app'
+        remove_help = '删除app'
+        clip_arg_error = '传入参数错误'
     mop_db.close()
     mop_db_file = True
 else:
+    clip_help = 'install clip app'
     plugin_list = []
+    remove_plugin_list = []
     mop_db_file = False
     welcome_flag = True
     init_help = 'Initialize or update in the current folder'
@@ -110,6 +119,7 @@ else:
     readme_help = 'View the plugin help'
     url_help = 'Modify the download URL of the json file'
     update_help = 'Update Plugin'
+    remove_help = 'Delete app'
 
 # 命令参数设置
 parser = argparse.ArgumentParser(description='MacOS 11 Plugins Install Tool')
@@ -120,7 +130,8 @@ parser.add_argument('-language', type=str, help=language_help, nargs=1, choices=
 parser.add_argument('-readme', type=str, help=readme_help, nargs='*')  # 查看插件帮助
 parser.add_argument('-url', type=str, help=url_help, nargs=1)  # 更新URL
 parser.add_argument('-update', type=str, help=update_help, nargs='*', choices=plugin_list)  # 更新插件
-parser.add_argument('-clip', type=str, help=update_help, nargs=1)  # 安装轻app
+parser.add_argument('-clip', type=str, help=clip_help, nargs='*')  # 安装轻app
+parser.add_argument('-remove', type=str, help=remove_help, nargs='*',  choices=remove_plugin_list)  # 删除app
 
 args = parser.parse_args()
 
@@ -208,7 +219,7 @@ if args.install and mop_db_file:
 
     for plugin_name in args.install:  # 遍历所有传入的插件
         if str(plugin_name).lower().startswith('url:'):
-            url_name = str(plugin_name).split(':')[1] # url名称
+            url_name = str(plugin_name).split(':')[1]  # url名称
             down_url = url_dict[url_name]  # 更新json文件URL
 
             continue  # 返回
@@ -293,6 +304,7 @@ if args.install and mop_db_file:
         # 写入插件
         with open(mop_db_path + packet_file_name, "wb") as code:
             code.write(plugin_r.content)
+        # TODO: 检查插件第一行是否为'#!'
 
         plugin_r.close()  # 关闭链接
 
@@ -302,7 +314,7 @@ if args.install and mop_db_file:
         # TODO: 检查别名是否已经存在
         file = open(os.path.expanduser('~/.zshrc'), 'a')
         # TODO: 根据程序类型对指令进行修改
-        file.write('alias ' + packet_alias + '="python3 ' + os.path.abspath(mop_db_path) + packet_file_name +'\n')
+        file.write('alias ' + packet_alias + '="python3 ' + os.path.abspath(mop_db_path) + '/' +packet_file_name + '"\n')
         file.close()
 
         mop_db[packet_db_name + 'version'] = packet_version  # 写入版本
@@ -315,7 +327,11 @@ if args.install and mop_db_file:
 
         # pip安装操作
         for pip_name in packet_pip:
-            if not mop_db[pip_name]:  # 排除已经安装过的插件
+            try:
+                pip_tf = mop_db[pip_name]
+            except:
+                pip_tf = False
+            if not pip_tf:  # 排除已经安装过的插件
                 os.system('pip3 install ' + pip_name)  # 安装插件
                 mop_db[pip_name] = True  # 插件安装成功后写入数据库
 
@@ -430,7 +446,6 @@ if args.url and mop_db_file:
             print(name + ' => ' + url + default)
 
         mop_db.close()  # 关闭链接
-        print(successful)
     elif args.url[0] == 'c':  # 设置默认URL
         mop_db = shelve.open(mop_db_path + 'mop')
 
@@ -455,4 +470,12 @@ if args.url and mop_db_file:
 
 # 更新插件
 if args.update and mop_db_file:
+    # TODO: 更新插件
     pass
+
+# 安装轻app
+if args.clip and mop_db_file:
+    mop_db = shelve.open(mop_db_path + 'mop')  # 连接数据库
+
+    if len(list(args.clip)) > 2:
+        print()
