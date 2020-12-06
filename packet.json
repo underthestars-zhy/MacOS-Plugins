@@ -1,9 +1,11 @@
 {
     "rename_tools": {
         "url": "https://raw.githubusercontent.com/underthestars-zhy/MOP-ReName-Tools/main/rename_tools.py",
-        "version": 1.1,
-        "plugins": [],
+        "file_name": "rename_tools.py",
+        "code_language": "python",
         "shortcut_name": "prm",
+        "version": 1.1,
+        "pip": [],
         "db_set": [
             [
                 "file_alias",
@@ -39,16 +41,22 @@
     },
     "sync": {
         "url": "https://raw.githubusercontent.com/underthestars-zhy/sync-tools/main/sync.py",
+        "file_name": "sync.py",
+        "code_language": "python",
+        "code_language_version": "3.8~3.10",
+        "alias": "pysync",
         "version": 1.1,
-        "plugins": [],
-        "shortcut_name": "pysync",
+        "pip": [],
+        "db_name": "sync_",
         "db_set": [
             [
                 "dir_set",
                 {}
             ]
         ],
-        "update": {},
+        "update": {
+            "1.1": "pass"
+        },
         "readme_cn": "\u4f7f\u7528pysync -s \u540c\u6b65\u6587\u4ef6\n\u4f7f\u7528pysync -dir\u8bbe\u7f6e\u540c\u6b65\u6587\u4ef6\u5939",
         "readme_en": "use pysync -s SYNC file\nuse pysync -dir Set the folder to sync"
     },
@@ -61,6 +69,10 @@
             [
                 "save_path",
                 ""
+            ],
+            [
+                "down",
+                []
             ]
         ],
         "update": {},
