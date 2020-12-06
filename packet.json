@@ -71,6 +71,7 @@
         "pip": [
             "pytube"
         ],
+        "db_name": "tubedown_",
         "db_set": [
             [
                 "save_path",
