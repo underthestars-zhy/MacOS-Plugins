@@ -13,7 +13,7 @@ import json
 import webbrowser
 
 # 常量设置
-VERSION = 1.3
+VERSION = 0x84
 
 # 多语言设置
 file_lists = os.listdir(os.path.expanduser('~'))
@@ -22,6 +22,7 @@ if 'mop.json' in file_lists:
     mop_db_path = json.load(file)
     file.close()
     mop_db = shelve.open(mop_db_path + 'mop')
+    LANGUAGE = mop_db['language']
     plugin_list = list(mop_db['plugins'])  # 获得插件列表(为update提供)
     plugin_list.append('all')  # 更新所有
     remove_plugin_list = list(mop_db['plugins'])  # remove占用
@@ -63,6 +64,7 @@ if 'mop.json' in file_lists:
         clip_help = 'install clip app'
         remove_help = 'Delete app'
         clip_arg_error = 'Incoming parameter error'
+        clip_find_error = 'Unable to find clip app'
     elif mop_db['language'] == 'cn':
         init_help = '初始化或者更新当前文件夹'
         install_help = '安装插件'
@@ -103,6 +105,7 @@ if 'mop.json' in file_lists:
         clip_help = '安装轻app'
         remove_help = '删除app'
         clip_arg_error = '传入参数错误'
+        clip_find_error = '无法找到clip app'
     mop_db.close()
     mop_db_file = True
 else:
@@ -131,7 +134,7 @@ parser.add_argument('-readme', type=str, help=readme_help, nargs='*')  # 查看�
 parser.add_argument('-url', type=str, help=url_help, nargs=1)  # 更新URL
 parser.add_argument('-update', type=str, help=update_help, nargs='*', choices=plugin_list)  # 更新插件
 parser.add_argument('-clip', type=str, help=clip_help, nargs='*')  # 安装轻app
-parser.add_argument('-remove', type=str, help=remove_help, nargs='*',  choices=remove_plugin_list)  # 删除app
+parser.add_argument('-remove', type=str, help=remove_help, nargs='*', choices=remove_plugin_list)  # 删除app
 
 args = parser.parse_args()
 
@@ -144,7 +147,7 @@ if args.init:
     if args.init[0] == 'install':
 
         mop_db = shelve.open('mop')
-        mop_db['version'] = VERSION # 设置当前版本
+        mop_db['version'] = VERSION  # 设置当前版本
 
         print('initializing...'.upper())
 
@@ -188,7 +191,6 @@ if args.init:
     if args.init[0] == 'update' and mop_db_file:
         pass
 
-
 # 语言设置
 if args.language:
     if args.language[0] == 'en':
@@ -229,7 +231,7 @@ if args.install and mop_db_file:
         else:
             down_plugin_list.append(plugin_name)  # 将文件添加到下载列表
 
-    if not down_plugin_list: # 检测下载列表是否为空
+    if not down_plugin_list:  # 检测下载列表是否为空
         print('\n' + install_no_down_plugins + '\n')
         sys.exit()  # 空则退出程序
 
@@ -264,6 +266,23 @@ if args.install and mop_db_file:
             print(plugin_find)
 
         packet_dict = packets_dict[packet_name]  # 保存插件字典
+
+        packet_type = 'text'  # 设置默认类型
+        try:
+            packet_type = packet_dict['type']
+        except:
+            pass
+
+        if packet_type == 'type':
+            packet_command = packet_dict['command']
+        elif packet_type == 'clip':
+            if str(mop_db['language']) == 'en':
+                print('不能下载clip app')
+            else:
+                print('Can’t download clip app')
+            continue
+        else:
+            packet_command = ''
 
         packet_url = packet_dict['url']  # 插件下载URL
         packet_file_name = packet_dict['file_name']  # 插件保存文件名
@@ -314,7 +333,8 @@ if args.install and mop_db_file:
         # TODO: 检查别名是否已经存在
         file = open(os.path.expanduser('~/.zshrc'), 'a')
         # TODO: 根据程序类型对指令进行修改
-        file.write('alias ' + packet_alias + '="python3 ' + os.path.abspath(mop_db_path) + '/' +packet_file_name + '"\n')
+        file.write(
+            'alias ' + packet_alias + '="' + packet_command + ' ' + os.path.abspath(mop_db_path) + '/' + packet_file_name + '"\n')
         file.close()
 
         mop_db[packet_db_name + 'version'] = packet_version  # 写入版本
@@ -372,7 +392,6 @@ if args.readme and mop_db_file:
 
     mop_db.close()  # 关闭链接
 
-
 # 修改json文件url
 if args.url and mop_db_file:
     if args.url[0] == 'n':  # 新增自定义URL
@@ -382,13 +401,13 @@ if args.url and mop_db_file:
         mop_db = shelve.open(mop_db_path + 'mop')
         url_dict = dict(mop_db['url_sets'])  # 加载数据库字典到本地
 
-        if new_url_name in url_dict.keys() or new_url in url_dict.values(): # 检测是否重复
+        if new_url_name in url_dict.keys() or new_url in url_dict.values():  # 检测是否重复
             print(url_new_error)
-            sys.exit() # 重复退出
+            sys.exit()  # 重复退出
 
         url_dict[new_url_name] = new_url
 
-        mop_db['url_sets'] = url_dict # save
+        mop_db['url_sets'] = url_dict  # save
 
         print(successful)
         mop_db.close()  # 关闭链接
@@ -477,5 +496,61 @@ if args.update and mop_db_file:
 if args.clip and mop_db_file:
     mop_db = shelve.open(mop_db_path + 'mop')  # 连接数据库
 
-    if len(list(args.clip)) > 2:
-        print()
+    if len(list(args.clip)) > 2:  # 检测是否超出argv限制
+        print(clip_arg_error)
+        sys.exit()
+
+    url = mop_db['json_url']  # 设置URL
+
+    for clip_name in args.clip:  # 遍历传入的参数,获取URL
+        if str(clip_name).lower().startswith('url:'):
+            url_name = str(clip_name).split(':')[1]
+            url = mop_db['url_sets'][url_name]
+
+    import requests
+
+    clip_r = requests.get(url)  # 获取下载对象
+    clip_r.raise_for_status()  # 错误检查
+    packet_dict = dict(clip_r.json())  # 保存json内容
+    clip_r.close()  # 关闭对象p
+
+    clip_name = 'clip_' + args.clip[0]  # 轻app名称
+
+    if not clip_name in packet_dict.keys():  # 检查轻app是否存在
+        print(clip_find_error)
+        sys.exit()
+
+    if packet_dict[clip_name]['type'] != 'clip':  # 检查类型是否为clip app
+        if mop_db['language'] == 'cn':
+            print('查询clip app失败')
+        else:
+            print('Enquiry clip app failure')
+            sys.exit()
+
+    clip_down_url = packet_dict[clip_name]['url']
+
+    clip_r = requests.get(clip_down_url)  # 下载文件
+    clip_r.raise_for_status()  # 错误检查
+    with open(mop_db_path + 'clip.py', "wb") as code:  # 写入文件
+        code.write(clip_r.content)
+    clip_r.close()  # 关闭对象
+
+    try:
+        import clip
+    except:
+        if LANGUAGE == 'cn':
+            print('加载clip出错')
+        else:
+            print('Error loading clip')
+        # TODO: 清理文件
+        sys.exit()
+
+    if clip.clip_command(LANGUAGE):
+        print('\n-----------------------\n')  # 分割线
+        print('OK')
+        print('\n-----------------------\n')  # 分割线
+    else:
+        print('Error')
+        print('\n-----------------------\n')  # 分割线
+
+    os.remove('clip.py')
