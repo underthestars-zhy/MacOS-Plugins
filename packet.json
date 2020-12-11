@@ -42,6 +42,8 @@
     "sync": {
         "url": "https://raw.githubusercontent.com/underthestars-zhy/sync-tools/main/sync.py",
         "clip": "https://raw.githubusercontent.com/underthestars-zhy/sync-tools/main/clip.py",
+        "type": "text",
+        "command": "python3",
         "file_name": "sync.py",
         "code_language": "python",
         "code_language_version": "3.8~3.10",
@@ -85,5 +87,9 @@
         "update": {},
         "readme_cn": "\u4f7f\u7528tube -d (\u50a8\u5b58\u8def\u5f84) \u4e0b\u8f7d\u89c6\u9891\u5e76\u50a8\u5b58\n\u4f7f\u7528tube -dir <filename>\u8bbe\u7f6e\u9ed8\u8ba4\u50a8\u5b58\u6587\u4ef6\u5939",
         "readme_en": "Download and store video using tube -d (store path) \nSet the default storage folder using tube -dir <filename>"
+    },
+    "clip_sync": {
+        "type": "clip",
+        "url": "https://raw.githubusercontent.com/underthestars-zhy/sync_clip/main/sync_clip.py"
     }
 }
