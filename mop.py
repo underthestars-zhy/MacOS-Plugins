@@ -127,7 +127,7 @@ else:
 # 命令参数设置
 parser = argparse.ArgumentParser(description='MacOS 11 Plugins Install Tool')
 
-parser.add_argument('-init', type=str, help=init_help, choices=['install', 'update', 'uninstall'], nargs=1)  # 初始化/更新命令
+parser.add_argument('-init', type=str, help=init_help, choices=['install', 'update', 'uninstall'], nargs=1)  # 初始化/更新/卸载命令
 parser.add_argument('-install', type=str, help=install_help, nargs='*')  # 安装命令
 parser.add_argument('-language', type=str, help=language_help, nargs=1, choices=['en', 'cn'])  # 更换语言
 parser.add_argument('-readme', type=str, help=readme_help, nargs='*')  # 查看插件帮助
@@ -556,4 +556,10 @@ if args.clip and mop_db_file:
         print('Error')
         print('\n-----------------------\n')  # 分割线
 
-    os.remove(mop_db_path + 'clip.py')
+    os.remove(mop_db_path + 'clip.py')  # 清除
+
+# 删除app
+if args.remove and mop_db_file:
+    remove_list = list(args.remove)  # 缓存所有要删除的app
+
+    print('\n-----------------------\n')  # 分割线
