@@ -13,7 +13,7 @@ import json
 import webbrowser
 
 # 常量设置
-VERSION = 0x84
+VERSION = 1.32
 
 # 多语言设置
 file_lists = os.listdir(os.path.expanduser('~'))
@@ -186,8 +186,10 @@ if args.init:
 
         if language == 'en':
             print('success'.upper())
+            print('Please reboot the terminal')
         elif language == 'cn':
             print('成功')
+            print('请重启终端')
     if args.init[0] == 'update' and mop_db_file:
         pass
 
@@ -273,7 +275,7 @@ if args.install and mop_db_file:
         except:
             pass
 
-        if packet_type == 'type':
+        if packet_type == 'text':
             packet_command = packet_dict['command']
         elif packet_type == 'clip':
             if str(mop_db['language']) == 'en':
@@ -332,7 +334,6 @@ if args.install and mop_db_file:
         # 创建别名alias
         # TODO: 检查别名是否已经存在
         file = open(os.path.expanduser('~/.zshrc'), 'a')
-        # TODO: 根据程序类型对指令进行修改
         file.write(
             'alias ' + packet_alias + '="' + packet_command + ' ' + os.path.abspath(mop_db_path) + '/' + packet_file_name + '"\n')
         file.close()
@@ -545,6 +546,8 @@ if args.clip and mop_db_file:
         # TODO: 清理文件
         sys.exit()
 
+    print('\n-----------------------\n')  # 分割线
+
     if clip.clip_command(LANGUAGE):
         print('\n-----------------------\n')  # 分割线
         print('OK')
@@ -553,4 +556,4 @@ if args.clip and mop_db_file:
         print('Error')
         print('\n-----------------------\n')  # 分割线
 
-    os.remove('clip.py')
+    os.remove(mop_db_path + 'clip.py')
