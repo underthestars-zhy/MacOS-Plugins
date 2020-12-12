@@ -13,7 +13,7 @@ import json
 import webbrowser
 
 # 常量设置
-VERSION = 1.32
+VERSION = 1.33
 
 # 多语言设置
 file_lists = os.listdir(os.path.expanduser('~'))
@@ -600,7 +600,7 @@ if args.remove and mop_db_file:
         # 删除alias
         new_zshrc = ''
         file = open(os.path.expanduser('~/.zshrc'), 'r')
-        for line in file.readline():
+        for line in file.readlines():
             if str(mop_db_path + mop_db['file_name'][remove_plugin_name]) not in str(line) \
                     and str(mop_db['alias_name'][remove_plugin_name]) not in str(line):
                 new_zshrc += line + '\n'
@@ -639,6 +639,8 @@ if args.remove and mop_db_file:
         mop_db['file_name'] = t_dict
 
         mop_db[packet_db_name + 'version'] = None  # 清除版本
+
+        # TODO: 清除插件自定义数据库遗留
 
         t_dict = None  # 释放内存
         t_list = None  # 释放内存
