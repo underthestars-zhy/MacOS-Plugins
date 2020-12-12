@@ -508,8 +508,13 @@ if args.url and mop_db_file:
 
 # 更新插件
 if args.update and mop_db_file:
-    # TODO: 更新插件
-    pass
+    mop_db = shelve.open(mop_db_path + 'mop')  # 连接数据库
+
+    url = mop_db['json_url']  # 设置URL
+
+    for update_plugin_name in list(args.update):
+        if str(update_plugin_name).lower().startswith('url:'):
+            url_name = str(update_plugin_name).split(':')[1]
 
 # 安装轻app
 if args.clip and mop_db_file:
