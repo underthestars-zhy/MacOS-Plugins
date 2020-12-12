@@ -561,7 +561,7 @@ if args.clip and mop_db_file:
             print('加载clip出错')
         else:
             print('Error loading clip')
-        # TODO: 清理文件
+        os.remove(mop_db_path + 'clip.py')  # 清除
         sys.exit()
 
     print('\n-----------------------\n')  # 分割线
