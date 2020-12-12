@@ -250,7 +250,7 @@ if args.install and mop_db_file:
 
     packet_r = requests.get(down_url)  # 获取一个下载对象
 
-    print('URL: ' + down_url)  # 输出下载URL
+    print('URL: ' + '\033[1;31m' + down_url + '\033[0m')  # 输出下载URL
 
     packet_r.raise_for_status()  # 检测链接有效性
     print(install_url_success)
@@ -261,7 +261,7 @@ if args.install and mop_db_file:
 
     for packet_name in down_plugin_list:
         print('\n-----------------------\n')  # 分割线
-        print(install_now + packet_name)
+        print(install_now + '\033[1;34m' + packet_name + '\033[0m')
 
         if packet_name not in packets_dict.keys():  # 检测当前下载插件是否在下载字典中
             print(plugin_error)
@@ -301,15 +301,15 @@ if args.install and mop_db_file:
         packet_readme_en = packet_dict['readme_en']  # 插件介绍英文
 
         # 信息输出
-        print('- Download link: ' + str(packet_url))
-        print('- Save file name: ' + str(packet_file_name))
-        print('- Code language: ' + str(packet_code_language))
-        print('- Required language version: ' + str(packet_code_language_version))
-        print('- Plug-in alias: ' + str(packet_alias))
-        print('- Plugin version: ' + str(packet_version))
-        print('- packet_version: ' + str(packet_pip))
-        print('- Database prefix name: ' + str(packet_db_name))
-        print('- Database operation: ' + str(packet_db_set))
+        print('- Download link: ' + '\033[1;34m' + str(packet_url) + '\033[0m')
+        print('- Save file name: ' + '\033[1;34m' + str(packet_file_name) + '\033[0m')
+        print('- Code language: ' + '\033[1;34m' + str(packet_code_language) + '\033[0m')
+        print('- Required language version: ' + '\033[1;34m' + str(packet_code_language_version) + '\033[0m')
+        print('- Plug-in alias: ' + '\033[1;34m' + str(packet_alias) + '\033[0m')
+        print('- Plugin version: ' + '\033[1;34m' + str(packet_version) + '\033[0m')
+        print('- packet_version: ' + '\033[1;34m' + str(packet_pip) + '\033[0m')
+        print('- Database prefix name: ' + '\033[1;34m' + str(packet_db_name) + '\033[0m')
+        print('- Database operation: ' + '\033[1;34m' + str(packet_db_set) + '\033[0m')
 
         print('README: ')
         # 输出插件简介
@@ -402,7 +402,7 @@ if args.readme and mop_db_file:
             print('\n-----------------------\n')  # 分割线
             continue
 
-        print(plugin_name + '-README: ')
+        print('\033[1;36m' + plugin_name + '-README: ' + '\033[0m')
         if mop_db['language'] == 'en':
             print(mop_db[mop_db['db_name'][plugin_name] + 'readme_en'])
         else:
@@ -586,16 +586,16 @@ if args.remove and mop_db_file:
     for remove_plugin_name in remove_list:
         # 向用户告知删除的app
         if LANGUAGE == 'cn':
-            print('卸载 => ' + remove_plugin_name)
+            print('\033[1;31m' + '卸载 => ' + '\033[0m' + remove_plugin_name)
         else:
-            print('Uninstall => ' + remove_plugin_name)
+            print('\033[1;31m' + 'Uninstall => ' + '\033[0m' + remove_plugin_name)
 
         # 删除文件
         os.remove(mop_db_path + mop_db['file_name'][remove_plugin_name])
         if LANGUAGE == 'cn':
-            print('删除文件 => ' + mop_db['file_name'][remove_plugin_name])
+            print('\033[1;31m' + '删除文件 => ' + '\033[0m' + mop_db['file_name'][remove_plugin_name])
         else:
-            print('Delete file => ' + mop_db['file_name'][remove_plugin_name])
+            print('\033[1;31m' + 'Delete file => ' + '\033[0m' + mop_db['file_name'][remove_plugin_name])
 
         # 删除alias
         new_zshrc = ''
@@ -611,9 +611,9 @@ if args.remove and mop_db_file:
         file.close()
 
         if LANGUAGE == 'cn':
-            print('删除alias => ' + mop_db['file_name'][remove_plugin_name])
+            print('\033[1;31m' + '删除alias => ' + '\033[0m' + mop_db['file_name'][remove_plugin_name])
         else:
-            print('Delete alias => ' + mop_db['file_name'][remove_plugin_name])
+            print('\033[1;31m' + 'Delete alias => ' + '\033[0m' + mop_db['file_name'][remove_plugin_name])
 
         # 数据库操作
         t_list = mop_db['plugins']
@@ -635,6 +635,7 @@ if args.remove and mop_db_file:
         mop_db['alias_name'] = t_dict
 
         t_dict = mop_db['file_name']
+        file_name = mop_db['file_name'][remove_plugin_name]
         del t_dict[remove_plugin_name]
         mop_db['file_name'] = t_dict
 
@@ -646,9 +647,9 @@ if args.remove and mop_db_file:
         t_list = None  # 释放内存
 
         if LANGUAGE == 'cn':
-            print('清除数据 => ' + mop_db['file_name'][remove_plugin_name])
+            print('\033[1;31m' + '清除数据 => ' + '\033[0m' + file_name)
         else:
-            print('Erase data => ' + mop_db['file_name'][remove_plugin_name])
+            print('\033[1;31m' + 'Erase data => ' + '\033[0m' + file_name)
 
         print('\n-----------------------\n')  # 分割线
 
