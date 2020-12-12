@@ -176,6 +176,8 @@ if args.init:
         }
         mop_db['plugins'] = []
         mop_db['db_name'] = {}  # 数据库前缀表
+        mop_db['alias_name'] = {}  # alias别名表
+        mop_db['file_name'] = {}  # 插件文件表
 
         mop_db.close()
 
@@ -365,6 +367,16 @@ if args.install and mop_db_file:
         temporary_dict = dict(mop_db['db_name'])
         temporary_dict[packet_name] = packet_db_name
         mop_db['db_name'] = temporary_dict
+
+        # 将插件别名添加到alias表
+        t_dict = dict(mop_db['alias_name'])  # 读取内容储存到临时dict
+        t_dict[packet_name] = packet_alias  # 加入alias别名
+        mop_db['alias_name'] = t_dict  # 将数据保存到数据库
+
+        # 将插件文件添加到文件名表
+        t_dict = dict(mop_db['file_name'])  # 读取内容储存到临时dict
+        t_dict[packet_name] = packet_file_name  # 加入alias别名
+        mop_db['file_name'] = t_dict  # 将数据保存到数据库
 
         print(successful)
 
@@ -561,5 +573,40 @@ if args.clip and mop_db_file:
 # 删除app
 if args.remove and mop_db_file:
     remove_list = list(args.remove)  # 缓存所有要删除的app
+    mop_db = shelve.open(mop_db_path + 'mop')  # 打开数据库
 
     print('\n-----------------------\n')  # 分割线
+
+    for remove_plugin_name in remove_list:
+        # 向用户告知删除的app
+        if LANGUAGE == 'cn':
+            print('卸载 => ' + remove_plugin_name)
+        else:
+            print('Uninstall => ' + remove_plugin_name)
+
+        # 删除文件
+        os.remove(mop_db_path + mop_db['file_name'][remove_plugin_name])
+        if LANGUAGE == 'cn':
+            print('删除文件 => ' + mop_db['file_name'][remove_plugin_name])
+        else:
+            print('Delete file => ' + mop_db['file_name'][remove_plugin_name])
+
+        # 删除alias
+        new_zshrc = ''
+        file = open(os.path.expanduser('~/.zshrc'), 'r')
+        for line in file.readline():
+            if str(mop_db_path + mop_db['file_name'][remove_plugin_name]) not in str(line) \
+                    and str(mop_db['alias_name'][remove_plugin_name]) not in str(line):
+                new_zshrc += line + '\n'
+        file.close()
+
+        file = open(os.path.expanduser('~/.zshrc'), 'w')
+        file.write(new_zshrc)
+        file.close()
+
+        if LANGUAGE == 'cn':
+            print('删除alias => ' + mop_db['file_name'][remove_plugin_name])
+        else:
+            print('Delete alias => ' + mop_db['file_name'][remove_plugin_name])
+
+        # 数据库操作
