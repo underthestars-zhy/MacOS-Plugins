@@ -626,6 +626,7 @@ if args.remove and mop_db_file:
         mop_db['plugins'] = t_list
 
         t_dict = mop_db['db_name']
+        packet_db_name = t_dict[remove_plugin_name]
         del t_dict[remove_plugin_name]
         mop_db['db_name'] = t_dict
 
@@ -636,6 +637,8 @@ if args.remove and mop_db_file:
         t_dict = mop_db['file_name']
         del t_dict[remove_plugin_name]
         mop_db['file_name'] = t_dict
+
+        mop_db[packet_db_name + 'version'] = None  # 清除版本
 
         t_dict = None  # 释放内存
         t_list = None  # 释放内存
