@@ -384,9 +384,9 @@ if args.install and mop_db_file:
 
     mop_db.close()  # 关闭数据库
 
-    if language == 'en':
+    if LANGUAGE == 'en':
         print('Please reboot the terminal')
-    elif language == 'cn':
+    elif LANGUAGE == 'cn':
         print('请重启终端')
 
     print('Done.')
@@ -649,9 +649,9 @@ if args.remove and mop_db_file:
 
     mop_db.close()
 
-    if language == 'en':
+    if LANGUAGE == 'en':
         print('Please reboot the terminal')
-    elif language == 'cn':
+    elif LANGUAGE == 'cn':
         print('请重启终端')
 
     print('Done')
