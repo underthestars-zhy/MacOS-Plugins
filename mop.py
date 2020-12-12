@@ -515,6 +515,7 @@ if args.update and mop_db_file:
     for update_plugin_name in list(args.update):
         if str(update_plugin_name).lower().startswith('url:'):
             url_name = str(update_plugin_name).split(':')[1]
+            url = mop_db['url_sets'][url_name]
 
 # 安装轻app
 if args.clip and mop_db_file:
