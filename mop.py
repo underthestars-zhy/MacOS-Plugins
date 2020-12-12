@@ -383,6 +383,12 @@ if args.install and mop_db_file:
     print('\n-----------------------\n')  # 分割线
 
     mop_db.close()  # 关闭数据库
+
+    if language == 'en':
+        print('Please reboot the terminal')
+    elif language == 'cn':
+        print('请重启终端')
+
     print('Done.')
 
 # 查看插件README
@@ -610,3 +616,42 @@ if args.remove and mop_db_file:
             print('Delete alias => ' + mop_db['file_name'][remove_plugin_name])
 
         # 数据库操作
+        t_list = mop_db['plugins']
+        i = 0
+        for plugin_name in t_list:
+            if plugin_name == remove_plugin_name:
+                del t_list[i]
+                break
+            i += 1
+        mop_db['plugins'] = t_list
+
+        t_dict = mop_db['db_name']
+        del t_dict[remove_plugin_name]
+        mop_db['db_name'] = t_dict
+
+        t_dict = mop_db['alias_name']
+        del t_dict[remove_plugin_name]
+        mop_db['alias_name'] = t_dict
+
+        t_dict = mop_db['file_name']
+        del t_dict[remove_plugin_name]
+        mop_db['file_name'] = t_dict
+
+        t_dict = None  # 释放内存
+        t_list = None  # 释放内存
+
+        if LANGUAGE == 'cn':
+            print('清除数据 => ' + mop_db['file_name'][remove_plugin_name])
+        else:
+            print('Erase data => ' + mop_db['file_name'][remove_plugin_name])
+
+        print('\n-----------------------\n')  # 分割线
+
+    mop_db.close()
+
+    if language == 'en':
+        print('Please reboot the terminal')
+    elif language == 'cn':
+        print('请重启终端')
+
+    print('Done')
