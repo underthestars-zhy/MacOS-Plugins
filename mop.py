@@ -573,9 +573,9 @@ if args.update and mop_db_file:
                 print('Update plug-in not found')
             continue
 
-        plugin_down_url = packets_dict[str(update_plugin_name).lower()]['url']  # 获取文件下载URL
-        plugin_update = packets_dict[str(update_plugin_name).lower()]['update']  # 获取文件更新操作
-        plugin_file_name = packets_dict[str(update_plugin_name).lower()]['file_name']  # 获取保存文件地址
+        plugin_down_url = packet_dict[str(update_plugin_name).lower()]['url']  # 获取文件下载URL
+        plugin_update = packet_dict[str(update_plugin_name).lower()]['update']  # 获取文件更新操作
+        plugin_file_name = packet_dict[str(update_plugin_name).lower()]['file_name']  # 获取保存文件地址
 
         plugin_r = requests.get(plugin_down_url)
         packet_r.raise_for_status()
