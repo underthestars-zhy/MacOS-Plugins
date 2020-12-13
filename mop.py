@@ -576,10 +576,11 @@ if args.update and mop_db_file:
         plugin_down_url = packet_dict[str(update_plugin_name).lower()]['url']  # 获取文件下载URL
         plugin_update = packet_dict[str(update_plugin_name).lower()]['update']  # 获取文件更新操作
         plugin_file_name = packet_dict[str(update_plugin_name).lower()]['file_name']  # 获取保存文件地址
+        plugin_new_version = packet_dict[str(update_plugin_name).lower()]['version']  # 获取版本
 
         plugin_r = requests.get(plugin_down_url)
         packet_r.raise_for_status()
-        with open(mop_db_path + packet_file_name, "wb") as code:
+        with open(mop_db_path + plugin_file_name, "wb") as code:
             code.write(plugin_r.content)
         # TODO: 检查插件第一行是否为'#!'
         plugin_r.close()
@@ -602,6 +603,8 @@ if args.update and mop_db_file:
                         print('数据操作成功!')
                     else:
                         print('Data operation successful!')
+
+        mop_db[str(update_plugin_name).lower() + '_version'] = plugin_new_version
 
         print('\n-----------------------\n')  # 分割线
 
