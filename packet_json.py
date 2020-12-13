@@ -37,7 +37,7 @@ packets = {
         'code_language': 'python',
         'code_language_version': '3.8~3.10',
         'alias': 'pysync',
-        'version': 1.3,
+        'version': 1.4,
         'pip': [],
         'db_name': 'sync_',
         'db_set': [
@@ -46,23 +46,26 @@ packets = {
         'update': {
             1.2: {},
             1.3: {},
+            1.4: {},
         },
         'readme_cn': '使用pysync -s 同步文件\n使用pysync -dir设置同步文件夹',
         'readme_en': 'use pysync -s SYNC file\nuse pysync -dir Set the folder to sync'
     },
     'tubedown': {
         'url': 'https://raw.githubusercontent.com/underthestars-zhy/tubedown/main/tubedown.py',
+        'type': 'text',
+        'command': 'python3',
         'file_name': 'tubedown.py',
         'code_language': 'python',
         'code_language_version': '3.8~3.10',
         'alias': 'tube',
-        'version': 1.1,
+        'version': 1.0,
         'pip': ['pytube'],
         'db_name': 'tubedown_',
         'db_set': [
             ['save_path', ''],
             ['down', []]
-            ],
+        ],
         'update': {
         },
         'readme_cn': '使用tube -d (储存路径) 下载视频并储存\n使用tube -dir <filename>设置默认储存文件夹',
