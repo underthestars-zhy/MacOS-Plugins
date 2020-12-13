@@ -592,7 +592,7 @@ if args.update and mop_db_file:
 
         plugin_version = mop_db[str(update_plugin_name).lower() + '_version']
         for update_version in dict(plugin_update).keys():
-            if plugin_version >= update_version:
+            if float(plugin_version) >= float(update_version):
                 continue
 
             for command_name, command in plugin_update[update_version]:
@@ -600,9 +600,9 @@ if args.update and mop_db_file:
                     for db_list in command:
                         mop_db[db_list[0]] = db_list[1]
                     if LANGUAGE == 'cn':
-                        print('数据操作成功!')
+                        print('数据操作成功...')
                     else:
-                        print('Data operation successful!')
+                        print('Data operation successful...')
 
         mop_db[str(update_plugin_name).lower() + '_version'] = plugin_new_version
 
