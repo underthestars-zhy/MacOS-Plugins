@@ -327,7 +327,18 @@ if args.install and mop_db_file:
         # 写入插件
         with open(mop_db_path + packet_file_name, "wb") as code:
             code.write(plugin_r.content)
-        # TODO: 检查插件第一行是否为'#!'
+
+        if packet_type == 'text' and str(packet_code_language).lower().startswith('python'):  # 检测Python文件首行配置
+            file = open(mop_db_path + packet_file_name, 'r')
+            code = file.read()
+            file.close()
+            if not code.lower().startswith('#!/usr/bin/env python'):
+                file = open(mop_db_path + packet_file_name, 'w')
+                code = '#!/usr/bin/env python3\n' + code
+                file.write(code)
+                file.close()
+
+        # TODO: 如果是Python文件则运行文件安装检查
 
         plugin_r.close()  # 关闭链接
 
@@ -337,12 +348,13 @@ if args.install and mop_db_file:
         # TODO: 检查别名是否已经存在
         file = open(os.path.expanduser('~/.zshrc'), 'a')
         file.write(
-            'alias ' + packet_alias + '="' + packet_command + ' ' + os.path.abspath(mop_db_path) + '/' + packet_file_name + '"\n')
+            'alias ' + packet_alias + '="' + packet_command + ' ' + os.path.abspath(
+                mop_db_path) + '/' + packet_file_name + '"\n')
         file.close()
 
-        mop_db[packet_db_name + 'version'] = packet_version  # 写入版本
-        mop_db[packet_db_name + 'readme_cn'] = packet_readme_cn  # 写入中文介绍
-        mop_db[packet_db_name + 'readme_en'] = packet_readme_en  # 写入英文介绍
+        mop_db[str(packet_db_name).lower() + 'version'] = packet_version  # 写入版本
+        mop_db[str(packet_db_name).lower() + 'readme_cn'] = packet_readme_cn  # 写入中文介绍
+        mop_db[str(packet_db_name).lower() + 'readme_en'] = packet_readme_en  # 写入英文介绍
 
         # 数据库操作
         for db_set_list in packet_db_set:
@@ -575,6 +587,25 @@ if args.update and mop_db_file:
             print('成功更新文件...')
         else:
             print('Successful file update...')
+        plugin_r.close()  # 释放资源
+
+        plugin_version = mop_db[str(update_plugin_name).lower() + '_version']
+        for update_version in dict(plugin_update).keys():
+            if plugin_version >= update_version:
+                continue
+
+            for command_name, command in plugin_update[update_version]:
+                if command_name == 'db':
+                    for db_list in command:
+                        mop_db[db_list[0]] = db_list[1]
+                    if LANGUAGE == 'cn':
+                        print('数据操作成功!')
+                    else:
+                        print('Data operation successful!')
+
+        print('\n-----------------------\n')  # 分割线
+
+    print('Done.')
 
 # 安装轻app
 if args.clip and mop_db_file:

@@ -44,7 +44,7 @@ packets = {
             ['dir_set', {}]
         ],
         'update': {
-            1.2: []
+            1.2: {}
         },
         'readme_cn': '使用pysync -s 同步文件\n使用pysync -dir设置同步文件夹',
         'readme_en': 'use pysync -s SYNC file\nuse pysync -dir Set the folder to sync'
