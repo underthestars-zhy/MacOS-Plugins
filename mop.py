@@ -549,10 +549,32 @@ if args.update and mop_db_file:
     update_plugin_name = ''  # 清除数据
 
     for update_plugin_name in update_plugin_list:
-        if LANGUAGE == 'cn':  # 输出中文呢引导语
+        if LANGUAGE == 'cn':  # 输出中文引导语
             print('正在更新 => ' + update_plugin_name)
         else:  # 输出英文引导语
             print('Updating now => ' + update_plugin_name)
+
+        if str(update_plugin_name).lower() not in packets_dict.keys():  # 检查更新的插件是否在数据列表中
+            if LANGUAGE == 'cn':
+                print('查找不到更新插件')
+            else:
+                print('Update plug-in not found')
+            continue
+
+        plugin_down_url = packets_dict[str(update_plugin_name).lower()]['url']  # 获取文件下载URL
+        plugin_update = packets_dict[str(update_plugin_name).lower()]['update']  # 获取文件更新操作
+        plugin_file_name = packets_dict[str(update_plugin_name).lower()]['file_name']  # 获取保存文件地址
+
+        plugin_r = requests.get(plugin_down_url)
+        packet_r.raise_for_status()
+        with open(mop_db_path + packet_file_name, "wb") as code:
+            code.write(plugin_r.content)
+        # TODO: 检查插件第一行是否为'#!'
+        plugin_r.close()
+        if LANGUAGE == 'cn':
+            print('成功更新文件...')
+        else:
+            print('Successful file update...')
 
 # 安装轻app
 if args.clip and mop_db_file:

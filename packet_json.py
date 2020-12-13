@@ -31,7 +31,6 @@ packets = {
     },
     'sync': {
         'url': 'https://raw.githubusercontent.com/underthestars-zhy/sync-tools/main/sync.py',
-        'clip': 'https://raw.githubusercontent.com/underthestars-zhy/sync-tools/main/clip.py',
         'type': 'text',
         'command': 'python3',
         'file_name': 'sync.py',
