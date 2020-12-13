@@ -566,7 +566,7 @@ if args.update and mop_db_file:
         else:  # 输出英文引导语
             print('Updating now => ' + update_plugin_name)
 
-        if str(update_plugin_name).lower() not in packets_dict.keys():  # 检查更新的插件是否在数据列表中
+        if str(update_plugin_name).lower() not in packet_dict.keys():  # 检查更新的插件是否在数据列表中
             if LANGUAGE == 'cn':
                 print('查找不到更新插件')
             else:
