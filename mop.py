@@ -511,11 +511,48 @@ if args.update and mop_db_file:
     mop_db = shelve.open(mop_db_path + 'mop')  # 连接数据库
 
     url = mop_db['json_url']  # 设置URL
+    update_plugin_list = []  # 缓存列表
 
     for update_plugin_name in list(args.update):
-        if str(update_plugin_name).lower().startswith('url:'):
+        if str(update_plugin_name).lower().startswith('url:'):  # 设置用户自定义URL
             url_name = str(update_plugin_name).split(':')[1]
             url = mop_db['url_sets'][url_name]
+            continue
+        else:
+            update_plugin_list.append(update_plugin_name)
+
+    print('\n-----------------------\n')  # 分割线
+
+    update_plugin_name = ''  # 清除数据
+    for update_plugin_name in update_plugin_list:
+        if LANGUAGE == 'cn':
+            print('即将更新 => ' + update_plugin_name)
+        else:
+            print('Will be updated soon => ' + update_plugin_name)
+
+    print('\n-----------------------\n')  # 分割线
+    import requests
+
+    print('URL: ' + '\033[1;31m' + url + '\033[0m')  # 输出下载URL
+
+    packet_r = requests.get(url)
+    packet_r.raise_for_status()
+    packet_dict = dict(packet_r.json())
+    packet_r.close()
+    if LANGUAGE == 'cn':
+        print('成功获取JSON数据')
+    else:
+        print('The JSON data was successfully retrieved')
+
+    print('\n-----------------------\n')  # 分割线
+
+    update_plugin_name = ''  # 清除数据
+
+    for update_plugin_name in update_plugin_list:
+        if LANGUAGE == 'cn':  # 输出中文呢引导语
+            print('正在更新 => ' + update_plugin_name)
+        else:  # 输出英文引导语
+            print('Updating now => ' + update_plugin_name)
 
 # 安装轻app
 if args.clip and mop_db_file:
