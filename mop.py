@@ -1,8 +1,8 @@
 #! /usr/local/bin/python3
-#  Copyright (c) 2020.
-#  You can freely change the code part, but you must follow the MIT protocol
-#  You cannot delete any information about UTS
-#  You cannot use this program to disrupt social order.
+#   Copyright (c) 2020.
+#   You can freely change the code part, but you must follow the MIT protocol
+#   You cannot delete any information about UTS
+#   You cannot use this program to disrupt social order.
 
 # 导入模块
 import argparse
@@ -400,6 +400,12 @@ if args.install and mop_db_file:
                 warning += 1
             if '#TODO:' in code.upper():
                 warning += 1
+            if "mop_db['plugins']" in code:
+                error += 1
+            if "mop_db['develop']" in code:
+                error += 1
+            if "['plugins']" in code or "['develop']" in code:
+                warning += 1
 
             print(f'Warning: {warning}, Error: {error}')
 
@@ -682,6 +688,12 @@ if args.update and mop_db_file:
             if 'os.listdir(os.path.expanduser(\'~\'))' in code:
                 warning += 1
             if '#TODO:' in code.upper():
+                warning += 1
+            if "mop_db['plugins']" in code:
+                error += 1
+            if "mop_db['develop']" in code:
+                error += 1
+            if "['plugins']" in code or "['develop']" in code:
                 warning += 1
 
             print(f'Warning: {warning}, Error: {error}')
