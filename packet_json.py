@@ -84,7 +84,7 @@ packets = {
         'code_language': 'python',
         'code_language_version': '3.8~3.10',
         'alias': 'update_mop',
-        'version': 1.1,
+        'version': 1.2,
         'pip': [],
         'db_name': 'update',
         'db_set': [
@@ -92,8 +92,8 @@ packets = {
         ],
         'update': {
         },
-        'readme_cn': 'update_mop 更新MOP\nmop_update token 设置token',
-        'readme_en': 'update_mop update mop\nmop_update token set token>'
+        'readme_cn': 'update_mop 更新MOP\nupdate_mop token 设置token',
+        'readme_en': 'update_mop update mop\nupdate_mop token set token>'
     }
 }
 
