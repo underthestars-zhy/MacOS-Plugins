@@ -848,5 +848,7 @@ if args.develop and mop_db_file:
         key_value = develop_dict[key_]
         print(f"{key_}: {key_value}")  # 输出当前信息
 
+    mop_db['develop'] = develop_dict
+
     mop_db.close()  # 关闭数据库
     print('Done')
