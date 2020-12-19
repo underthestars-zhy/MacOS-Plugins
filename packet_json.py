@@ -84,7 +84,7 @@ packets = {
         'code_language': 'python',
         'code_language_version': '3.8~3.10',
         'alias': 'update_mop',
-        'version': 1.0,
+        'version': 1.1,
         'pip': [],
         'db_name': 'update',
         'db_set': [
