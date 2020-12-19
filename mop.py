@@ -186,6 +186,7 @@ if args.init:
         }
         mop_db['plugins'] = []
         mop_db['db_name'] = {}  # 数据库前缀表
+        mop_db['db_plugin'] = {}  # 插件自定义数据
         mop_db['alias_name'] = {}  # alias别名表
         mop_db['file_name'] = {}  # 插件文件表
         mop_db['develop'] = {  # 开发者设置
@@ -241,6 +242,7 @@ if args.init:
                 0: (f'{old_version}Update=>Init{VERSION}', 'system'),
             }
             mop_db['log_num'] = 0
+            mop_db['db_plugin'] = {}  # 插件自定义数据
 
         # print readme
         if LANGUAGE == 'cn':
@@ -540,6 +542,14 @@ if args.install and mop_db_file:
         t_dict[packet_name] = packet_file_name  # 加入alias别名
         mop_db['file_name'] = t_dict  # 将数据保存到数据库
 
+        # 将插件数据名称添加到数据表
+        t_dict = dict(mop_db['db_plugin'])  # 读取内容储存到临时dict
+        t_list = []
+        for db_set_list in packet_db_set:
+            t_list.append(packet_db_name + db_set_list[0])
+        t_dict[packet_name] = t_list
+        mop_db['db_plugin'] = t_dict  # 将数据保存到数据库
+
         print(successful)
 
     print('\n-----------------------\n')  # 分割线
@@ -661,6 +671,16 @@ if args.url and mop_db_file:
 
         print(successful)
         mop_db.close()  # 关闭链接
+    elif args.url[0] == 't':  # 测试链接
+        mop_db = shelve.open(mop_db_path + 'mop')
+
+        url_dict = dict(mop_db['url_sets'])  # 加载数据库字典到本地
+
+        mop_db.close()
+
+        for name, url in url_dict.items():  # 遍历字典
+            try_r = requests.get(url)
+            print(name + ' +> ' + try_r.status_code)
     else:
         print(url_arg_error)
         if input('y/n> ').lower() == 'y':
