@@ -375,7 +375,33 @@ if args.install and mop_db_file:
                 file.write(code)
                 file.close()
 
-        # TODO: 如果是Python文件则运行文件安装检查
+        if bool(mop_db['develop']['python_security_check']):  # 获取用户是否开启python代码安全检查
+            if LANGUAGE == 'cn':
+                print('开始进行Python安全检查')
+            else:
+                print('Start the Python Security Check')
+
+            warning = 0  # 警告数量
+            error = 0  # 错误数量
+
+            file = open(mop_db_path + packet_file_name, 'r')  # 打开文件
+            code = str(file.read())  # 缓存文件
+            file.close()  # 关闭文件
+
+            if 'mop_db[\'version\']' in code or 'mop_db["version"]' in code or 'mop_db["""version"""]' in code \
+                    or 'mop_db[\'\'\'version\'\'\']' in code:
+                error += 1
+            if 'os.remove(' in code:
+                warning += 1
+            if 'mop.py' in code:
+                warning += 1
+                error += 1
+            if 'os.listdir(os.path.expanduser(\'~\'))' in code:
+                warning += 1
+            if '#TODO:' in code.upper():
+                warning += 1
+
+            print(f'Warning: {warning}, Error: {error}')
 
         plugin_r.close()  # 关闭链接
 
@@ -632,7 +658,33 @@ if args.update and mop_db_file:
                 file.write(code)
                 file.close()
 
-        # TODO: python文件安全检测
+        if bool(mop_db['develop']['python_security_check']):  # 获取用户是否开启python代码安全检查
+            if LANGUAGE == 'cn':
+                print('开始进行Python安全检查')
+            else:
+                print('Start the Python Security Check')
+
+            warning = 0  # 警告数量
+            error = 0  # 错误数量
+
+            file = open(mop_db_path + plugin_file_name, 'r')  # 打开文件
+            code = str(file.read())  # 缓存文件
+            file.close()  # 关闭文件
+
+            if 'mop_db[\'version\']' in code or 'mop_db["version"]' in code or 'mop_db["""version"""]' in code \
+                    or 'mop_db[\'\'\'version\'\'\']' in code:
+                error += 1
+            if 'os.remove(' in code:
+                warning += 1
+            if 'mop.py' in code:
+                warning += 1
+                error += 1
+            if 'os.listdir(os.path.expanduser(\'~\'))' in code:
+                warning += 1
+            if '#TODO:' in code.upper():
+                warning += 1
+
+            print(f'Warning: {warning}, Error: {error}')
 
         plugin_r.close()
         if LANGUAGE == 'cn':
