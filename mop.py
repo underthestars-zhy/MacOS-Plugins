@@ -485,9 +485,9 @@ if args.readme and mop_db_file:
 
         print('\033[1;36m' + plugin_name + '-README: ' + '\033[0m')
         if mop_db['language'] == 'en':
-            print(mop_db[mop_db['db_name'][plugin_name] + 'readme_en'])
+            print(mop_db[mop_db['db_name'][plugin_name] + '_readme_en'])
         else:
-            print(mop_db[mop_db['db_name'][plugin_name] + 'readme_cn'])
+            print(mop_db[mop_db['db_name'][plugin_name] + '_readme_cn'])
         print('\n-----------------------\n')  # 分割线
 
     mop_db.close()  # 关闭链接
