@@ -127,7 +127,9 @@ else:
 # 命令参数设置
 parser = argparse.ArgumentParser(description='MacOS 11 Plugins Install Tool')
 
-parser.add_argument('-init', type=str, help=init_help, choices=['install', 'update', 'uninstall'], nargs=1)  # 初始化/更新/卸载命令
+parser.add_argument(
+    '-init', type=str, help=init_help, choices=['install', 'update', 'uninstall'], nargs=1
+)  # 初始化/更新/卸载命令
 parser.add_argument('-install', type=str, help=install_help, nargs='*')  # 安装命令
 parser.add_argument('-language', type=str, help=language_help, nargs=1, choices=['en', 'cn'])  # 更换语言
 parser.add_argument('-readme', type=str, help=readme_help, nargs='*')  # 查看插件帮助
@@ -577,12 +579,26 @@ if args.update and mop_db_file:
         plugin_update = packet_dict[str(update_plugin_name).lower()]['update']  # 获取文件更新操作
         plugin_file_name = packet_dict[str(update_plugin_name).lower()]['file_name']  # 获取保存文件地址
         plugin_new_version = packet_dict[str(update_plugin_name).lower()]['version']  # 获取版本
+        packet_type = packet_dict[str(update_plugin_name).lower()]['type']  # 获取类型
+        packet_code_language = packet_dict[str(update_plugin_name).lower()]['code_language']  # 获取语言
 
         plugin_r = requests.get(plugin_down_url)
         packet_r.raise_for_status()
         with open(mop_db_path + plugin_file_name, "wb") as code:
             code.write(plugin_r.content)
-        # TODO: 检查插件第一行是否为'#!'
+
+        if packet_type == 'text' and str(packet_code_language).lower().startswith('python'):  # 检测Python文件首行配置
+            file = open(mop_db_path + plugin_file_name, 'r')
+            code = file.read()
+            file.close()
+            if not code.lower().startswith('#!/usr/bin/env python'):
+                file = open(mop_db_path + plugin_file_name, 'w')
+                code = '#!/usr/bin/env python3\n' + code
+                file.write(code)
+                file.close()
+
+        # TODO: python文件安全检测
+
         plugin_r.close()
         if LANGUAGE == 'cn':
             print('成功更新文件...')
@@ -630,7 +646,7 @@ if args.clip and mop_db_file:
     clip_r = requests.get(url)  # 获取下载对象
     clip_r.raise_for_status()  # 错误检查
     packet_dict = dict(clip_r.json())  # 保存json内容
-    clip_r.close()  # 关闭对象p
+    clip_r.close()  # 关闭对象
 
     clip_name = 'clip_' + args.clip[0]  # 轻app名称
 
