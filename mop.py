@@ -13,7 +13,7 @@ import json
 import webbrowser
 
 # 常量设置
-VERSION = 1.34
+VERSION = 1.41
 
 # 多语言设置
 file_lists = os.listdir(os.path.expanduser('~'))
@@ -66,6 +66,7 @@ if 'mop.json' in file_lists:
         clip_arg_error = 'Incoming parameter error'
         clip_find_error = 'Unable to find clip app'
         develop_help = 'Developer settings'
+        log_help = 'Log function'
     elif mop_db['language'] == 'cn':
         init_help = '初始化或者更新当前文件夹'
         install_help = '安装插件'
@@ -108,6 +109,7 @@ if 'mop.json' in file_lists:
         clip_arg_error = '传入参数错误'
         clip_find_error = '无法找到clip app'
         develop_help = '开发者设置'
+        log_help = '日志功能'
     mop_db.close()
     mop_db_file = True
 else:
@@ -126,6 +128,7 @@ else:
     update_help = 'Update Plugin'
     remove_help = 'Delete app'
     develop_help = 'Developer settings'
+    log_help = 'Log function'
 
 # 命令参数设置
 parser = argparse.ArgumentParser(description='MacOS 11 Plugins Install Tool')
@@ -141,6 +144,7 @@ parser.add_argument('-update', type=str, help=update_help, nargs='*', choices=pl
 parser.add_argument('-clip', type=str, help=clip_help, nargs='*')  # 安装轻app
 parser.add_argument('-remove', type=str, help=remove_help, nargs='*', choices=remove_plugin_list)  # 删除app
 parser.add_argument('-develop', type=str, help=develop_help, nargs='*', choices=['python_security_check'])  # 删除app
+parser.add_argument('-log', type=str, help=log_help, nargs='1', choices=['print'])  # 删除app
 
 args = parser.parse_args()
 
@@ -187,6 +191,10 @@ if args.init:
         mop_db['develop'] = {  # 开发者设置
             'python_security_check': False,
         }
+        mop_db['log'] = {
+            0: (f'Init{VERSION}', 'system'),
+        }
+        mop_db['log_num'] = 0
 
         mop_db.close()
 
@@ -210,6 +218,12 @@ if args.init:
                 print('不能更新到低版本')
             else:
                 print('Can not be updated to the lower version')
+
+            t_dict = mop_db['log']
+            mop_db['log_num'] = int(mop_db['log_num']) + 1
+            t_dict[int(mop_db['log_num'])] = f'{old_version}Update Down To<{VERSION}'
+            mop_db['log'] = t_dict
+
             sys.exit()
         else:
             print(f"{old_version} => {VERSION}")  # 输出提示
@@ -220,6 +234,13 @@ if args.init:
             mop_db['develop'] = {  # 开发者设置
                 'python_security_check': False,
             }
+        if old_version < 1.41:
+            print('\033[1;34m' + '=>' + '\033[0m' + ' 1.41')  # 输出当前更新
+
+            mop_db['log'] = {
+                0: (f'{old_version}Update=>Init{VERSION}', 'system'),
+            }
+            mop_db['log_num'] = 0
 
         # print readme
         if LANGUAGE == 'cn':
@@ -228,6 +249,11 @@ if args.init:
             print('- Support updates\n- Develop settings\n- Security check')
 
         mop_db['version'] = VERSION  # 更新版本
+
+        t_dict = mop_db['log']
+        mop_db['log_num'] = int(mop_db['log_num']) + 1
+        t_dict[int(mop_db['log_num'])] = (f'{old_version}Update TO>{VERSION}', 'system')
+        mop_db['log'] = t_dict
 
         mop_db.close()  # 关闭数据库
         print('Done.')
@@ -238,6 +264,12 @@ if args.language:
         if mop_db_file:
             mop_db = shelve.open(mop_db_path + 'mop')
             mop_db['language'] = 'en'
+
+            t_dict = mop_db['log']
+            mop_db['log_num'] = int(mop_db['log_num']) + 1
+            t_dict[int(mop_db['log_num'])] = ('Change Language > cn', 'user')
+            mop_db['log'] = t_dict
+
             mop_db.close()
             print(language_set)
         else:
@@ -246,6 +278,12 @@ if args.language:
         if mop_db_file:
             mop_db = shelve.open(mop_db_path + 'mop')
             mop_db['language'] = 'cn'
+
+            t_dict = mop_db['log']
+            mop_db['log_num'] = int(mop_db['log_num']) + 1
+            t_dict[int(mop_db['log_num'])] = ('Change Language > en', 'user')
+            mop_db['log'] = t_dict
+
             mop_db.close()
             print(language_set)
         else:
@@ -287,6 +325,11 @@ if args.install and mop_db_file:
 
     packet_r = requests.get(down_url)  # 获取一个下载对象
 
+    t_dict = mop_db['log']
+    mop_db['log_num'] = int(mop_db['log_num']) + 1
+    t_dict[int(mop_db['log_num'])] = (f'Download File: {down_url}', 'requests')
+    mop_db['log'] = t_dict
+
     print('URL: ' + '\033[1;31m' + down_url + '\033[0m')  # 输出下载URL
 
     packet_r.raise_for_status()  # 检测链接有效性
@@ -302,9 +345,20 @@ if args.install and mop_db_file:
 
         if packet_name not in packets_dict.keys():  # 检测当前下载插件是否在下载字典中
             print(plugin_error)
+
+            t_dict = mop_db['log']
+            mop_db['log_num'] = int(mop_db['log_num']) + 1
+            t_dict[int(mop_db['log_num'])] = (f'Cannot Install Plugin > {packet_name}', 'install')
+            mop_db['log'] = t_dict
+
             continue
         else:
             print(plugin_find)
+
+            t_dict = mop_db['log']
+            mop_db['log_num'] = int(mop_db['log_num']) + 1
+            t_dict[int(mop_db['log_num'])] = (f'Install Plugin > {packet_name}', 'install')
+            mop_db['log'] = t_dict
 
         packet_dict = packets_dict[packet_name]  # 保存插件字典
 
@@ -357,6 +411,12 @@ if args.install and mop_db_file:
 
         # 下载插件
         plugin_r = requests.get(packet_url)
+
+        t_dict = mop_db['log']
+        mop_db['log_num'] = int(mop_db['log_num']) + 1
+        t_dict[int(mop_db['log_num'])] = (f'Download File: {packet_url}', 'requests')
+        mop_db['log'] = t_dict
+
         plugin_r.raise_for_status()
 
         # TODO: 检查插件文件是否已经存在在目录中
@@ -374,6 +434,12 @@ if args.install and mop_db_file:
                 code = '#!/usr/bin/env python3\n' + code
                 file.write(code)
                 file.close()
+
+                file_name = mop_db_path + packet_file_name
+                t_dict = mop_db['log']
+                mop_db['log_num'] = int(mop_db['log_num']) + 1
+                t_dict[int(mop_db['log_num'])] = (f'Creat Python File Head > {file_name}', 'file')
+                mop_db['log'] = t_dict
 
         if bool(mop_db['develop']['python_security_check']):  # 获取用户是否开启python代码安全检查
             if LANGUAGE == 'cn':
@@ -409,6 +475,11 @@ if args.install and mop_db_file:
 
             print(f'Warning: {warning}, Error: {error}')
 
+            t_dict = mop_db['log']
+            mop_db['log_num'] = int(mop_db['log_num']) + 1
+            t_dict[int(mop_db['log_num'])] = (f'Find Error > {packet_name}: Warning: {warning}, Error: {error}', 'safe')
+            mop_db['log'] = t_dict
+
         plugin_r.close()  # 关闭链接
 
         print(plugin_file)
@@ -420,6 +491,11 @@ if args.install and mop_db_file:
             'alias ' + packet_alias + '="' + packet_command + ' ' + os.path.abspath(
                 mop_db_path) + '/' + packet_file_name + '"\n')
         file.close()
+
+        t_dict = mop_db['log']
+        mop_db['log_num'] = int(mop_db['log_num']) + 1
+        t_dict[int(mop_db['log_num'])] = (f'Creat Alias: {packet_alias}', 'file')
+        mop_db['log'] = t_dict
 
         mop_db[str(packet_db_name).lower() + '_version'] = packet_version  # 写入版本
         mop_db[str(packet_db_name).lower() + '_readme_cn'] = packet_readme_cn  # 写入中文介绍
@@ -438,6 +514,11 @@ if args.install and mop_db_file:
             if not pip_tf:  # 排除已经安装过的插件
                 os.system('pip3 install ' + pip_name)  # 安装插件
                 mop_db[pip_name] = True  # 插件安装成功后写入数据库
+
+                t_dict = mop_db['log']
+                mop_db['log_num'] = int(mop_db['log_num']) + 1
+                t_dict[int(mop_db['log_num'])] = (f'Install PIP > {pip_name}', 'install')
+                mop_db['log'] = t_dict
 
         # 把插件添加到数据库到插件列表
         temporary_list = list(mop_db['plugins'])
@@ -916,3 +997,14 @@ if args.develop and mop_db_file:
 
     mop_db.close()  # 关闭数据库
     print('Done')
+
+if args.log and mop_db_file:
+    if args.log[0] == 'print':
+        mop_db = shelve.open(mop_db_path + 'mop')  # 打开数据库
+        log_dict = dict(mop_db['log'])  # 加载日志
+        mop_db.close()  # 关闭数据库
+
+        for id_, log_tuple in log_dict.items():
+            print(f'ID: {id_}')
+            print('Class: ' + log_tuple[1])
+            print('\t' + log_tuple[0])
