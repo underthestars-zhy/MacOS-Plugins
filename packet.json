@@ -113,7 +113,7 @@
             ]
         ],
         "update": {},
-        "readme_cn": "update_mop \u66f4\u65b0MOP",
-        "readme_en": "update_mop update mop>"
+        "readme_cn": "update_mop \u66f4\u65b0MOP\nmop_update token \u8bbe\u7f6etoken",
+        "readme_en": "update_mop update mop\nmop_update token set token>"
     }
 }

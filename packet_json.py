@@ -92,8 +92,8 @@ packets = {
         ],
         'update': {
         },
-        'readme_cn': 'update_mop 更新MOP',
-        'readme_en': 'update_mop update mop>'
+        'readme_cn': 'update_mop 更新MOP\nmop_update token 设置token',
+        'readme_en': 'update_mop update mop\nmop_update token set token>'
     }
 }
 
