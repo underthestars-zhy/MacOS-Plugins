@@ -1,7 +1,7 @@
-#  Copyright (c) 2020.
-#  You can freely change the code part, but you must follow the MIT protocol
-#  You cannot delete any information about UTS
-#  You cannot use this program to disrupt social order.
+#   Copyright (c) 2020.
+#   You can freely change the code part, but you must follow the MIT protocol
+#   You cannot delete any information about UTS
+#   You cannot use this program to disrupt social order.
 
 import json
 
@@ -75,6 +75,25 @@ packets = {
     'clip_sync': {
         'type': 'clip',
         'url': 'https://raw.githubusercontent.com/underthestars-zhy/sync_clip/main/sync_clip.py',
+    },
+    'mop_update': {
+        'url': 'https://raw.githubusercontent.com/underthestars-zhy/mop_update/main/mop_update.py',
+        'type': 'text',
+        'command': 'python3',
+        'file_name': 'mop_update.py',
+        'code_language': 'python',
+        'code_language_version': '3.8~3.10',
+        'alias': 'update_mop',
+        'version': 1.0,
+        'pip': [],
+        'db_name': 'update',
+        'db_set': [
+            ['last_version', ''],
+        ],
+        'update': {
+        },
+        'readme_cn': 'update_mop 更新MOP',
+        'readme_en': 'update_mop update mop>'
     }
 }
 
