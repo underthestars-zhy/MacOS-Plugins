@@ -13,7 +13,7 @@ import json
 import webbrowser
 
 # 常量设置
-VERSION = 1.33
+VERSION = 1.34
 
 # 多语言设置
 file_lists = os.listdir(os.path.expanduser('~'))
@@ -65,6 +65,7 @@ if 'mop.json' in file_lists:
         remove_help = 'Delete app'
         clip_arg_error = 'Incoming parameter error'
         clip_find_error = 'Unable to find clip app'
+        develop_help = 'Developer settings'
     elif mop_db['language'] == 'cn':
         init_help = '初始化或者更新当前文件夹'
         install_help = '安装插件'
@@ -106,6 +107,7 @@ if 'mop.json' in file_lists:
         remove_help = '删除app'
         clip_arg_error = '传入参数错误'
         clip_find_error = '无法找到clip app'
+        develop_help = '开发者设置'
     mop_db.close()
     mop_db_file = True
 else:
@@ -123,6 +125,7 @@ else:
     url_help = 'Modify the download URL of the json file'
     update_help = 'Update Plugin'
     remove_help = 'Delete app'
+    develop_help = 'Developer settings'
 
 # 命令参数设置
 parser = argparse.ArgumentParser(description='MacOS 11 Plugins Install Tool')
@@ -137,6 +140,7 @@ parser.add_argument('-url', type=str, help=url_help, nargs=1)  # 更新URL
 parser.add_argument('-update', type=str, help=update_help, nargs='*', choices=plugin_list)  # 更新插件
 parser.add_argument('-clip', type=str, help=clip_help, nargs='*')  # 安装轻app
 parser.add_argument('-remove', type=str, help=remove_help, nargs='*', choices=remove_plugin_list)  # 删除app
+parser.add_argument('-develop', type=str, help=develop_help, nargs='*', choices=['python_security_check'])  # 删除app
 
 args = parser.parse_args()
 
@@ -180,6 +184,9 @@ if args.init:
         mop_db['db_name'] = {}  # 数据库前缀表
         mop_db['alias_name'] = {}  # alias别名表
         mop_db['file_name'] = {}  # 插件文件表
+        mop_db['develop'] = {  # 开发者设置
+            'python_security_check': False,
+        }
 
         mop_db.close()
 
@@ -195,7 +202,35 @@ if args.init:
             print('成功')
             print('请重启终端')
     if args.init[0] == 'update' and mop_db_file:
-        pass
+        mop_db = shelve.open(mop_db_path + 'mop')  # 打开数据库
+
+        old_version = float(mop_db['version'])  # 获取旧版本
+        if old_version >= VERSION:  # 检测是否向低版本更新
+            if LANGUAGE == 'cn':
+                print('不能更新到低版本')
+            else:
+                print('Can not be updated to the lower version')
+            sys.exit()
+        else:
+            print(f"{old_version} => {VERSION}")  # 输出提示
+
+        if old_version < 1.34:
+            print('\033[1;34m' + '=>' + '\033[0m' + ' 1.34')  # 输出当前更新
+
+            mop_db['develop'] = {  # 开发者设置
+                'python_security_check': False,
+            }
+
+        # print readme
+        if LANGUAGE == 'cn':
+            print('- 支持更新\n- develop设置\n- 安全检查')
+        else:
+            print('- Support updates\n- Develop settings\n- Security check')
+
+        mop_db['version'] = VERSION  # 更新版本
+
+        mop_db.close()  # 关闭数据库
+        print('Done.')
 
 # 语言设置
 if args.language:
@@ -775,4 +810,43 @@ if args.remove and mop_db_file:
     elif LANGUAGE == 'cn':
         print('请重启终端')
 
+    print('Done')
+
+if args.develop and mop_db_file:
+    key_ = args.develop[0]  # 获取开发者设置键名
+    mop_db = shelve.open(mop_db_path + 'mop')  # 打开数据库
+
+    develop_dict = dict(mop_db['develop'])  # 缓存数据库开发者设置字典
+
+    if key_ not in develop_dict.keys():  # 检测当前设置选项是否存在
+        if LANGUAGE == 'cn':
+            print('查询不到相关开发者设置')
+        else:
+            print('Relevant developer settings could not be queried')
+        sys.exit()
+
+    key_value = develop_dict[key_]
+
+    print(f"{key_}: {key_value}")  # 输出当前信息
+
+    if key_value:
+        if LANGUAGE == 'cn':
+            print('输出 Y 关闭')
+        else:
+            print('Output Y off')
+        new_key_value = False
+    else:
+        if LANGUAGE == 'cn':
+            print('输出 Y 打开')
+        else:
+            print('Output Y open')
+        new_key_value = True
+
+    input_ = input('Y/N> ')  # 用户输入
+    if input_ == 'Y':
+        develop_dict[key_] = new_key_value  # 设置新值
+        key_value = develop_dict[key_]
+        print(f"{key_}: {key_value}")  # 输出当前信息
+
+    mop_db.close()  # 关闭数据库
     print('Done')
