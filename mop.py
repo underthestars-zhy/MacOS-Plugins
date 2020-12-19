@@ -421,9 +421,9 @@ if args.install and mop_db_file:
                 mop_db_path) + '/' + packet_file_name + '"\n')
         file.close()
 
-        mop_db[str(packet_db_name).lower() + 'version'] = packet_version  # 写入版本
-        mop_db[str(packet_db_name).lower() + 'readme_cn'] = packet_readme_cn  # 写入中文介绍
-        mop_db[str(packet_db_name).lower() + 'readme_en'] = packet_readme_en  # 写入英文介绍
+        mop_db[str(packet_db_name).lower() + '_version'] = packet_version  # 写入版本
+        mop_db[str(packet_db_name).lower() + '_readme_cn'] = packet_readme_cn  # 写入中文介绍
+        mop_db[str(packet_db_name).lower() + '_readme_en'] = packet_readme_en  # 写入英文介绍
 
         # 数据库操作
         for db_set_list in packet_db_set:
