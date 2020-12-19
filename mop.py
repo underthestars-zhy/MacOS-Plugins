@@ -954,9 +954,13 @@ if args.remove and mop_db_file:
         del t_dict[remove_plugin_name]
         mop_db['file_name'] = t_dict
 
-        mop_db[packet_db_name + 'version'] = None  # 清除版本
+        mop_db[packet_db_name + '_version'] = None  # 清除版本
 
-        # TODO: 清除插件自定义数据库遗留
+        plugin_dbs = list(mop_db['db_name'][remove_plugin_name])  # 获取db表
+        for plugin_db in plugin_dbs:
+            mop_db[plugin_db] = None  # 删除db数据
+
+        # TODO: 删除readme
 
         t_dict = None  # 释放内存
         t_list = None  # 释放内存
