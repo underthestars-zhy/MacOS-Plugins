@@ -37,7 +37,7 @@ packets = {
         'code_language': 'python',
         'code_language_version': '3.8~3.10',
         'alias': 'pysync',
-        'version': 1.4,
+        'version': 1.5,
         'pip': [],
         'db_name': 'sync_',
         'db_set': [
@@ -47,6 +47,7 @@ packets = {
             1.2: {},
             1.3: {},
             1.4: {},
+            1.5: {},
         },
         'readme_cn': '使用pysync -s 同步文件\n使用pysync -dir设置同步文件夹',
         'readme_en': 'use pysync -s SYNC file\nuse pysync -dir Set the folder to sync'

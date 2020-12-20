@@ -259,6 +259,18 @@ if args.init:
 
         mop_db.close()  # 关闭数据库
         print('Done.')
+    if args.init[0] == 'uninstall' and mop_db_file:
+        mop_db = shelve.open(mop_db_path + 'mop')  # 打开数据库
+
+        t_dict = mop_db['log']
+        mop_db['log_num'] = int(mop_db['log_num']) + 1
+        t_dict[int(mop_db['log_num'])] = (f'Uninstall > {VERSION}', 'system')
+        mop_db['log'] = t_dict
+
+        if LANGUAGE == 'cn':
+            print('开始卸载...')
+        else:
+            print('Begin unloading...')
 
 # 语言设置
 if args.language:
