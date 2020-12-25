@@ -972,7 +972,9 @@ if args.remove and mop_db_file:
         for plugin_db in plugin_dbs:
             mop_db[plugin_db] = None  # 删除db数据
 
-        # TODO: 删除readme
+        # 删除readme
+        mop_db[remove_plugin_name + '_readme_cn'] = None
+        mop_db[remove_plugin_name + '_readme_en'] = None
 
         t_dict = None  # 释放内存
         t_list = None  # 释放内存
