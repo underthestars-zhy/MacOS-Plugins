@@ -1,5 +1,5 @@
 #! /usr/local/bin/python3
-#   Copyright (c) 2020.
+#   Copyright (c) 2021.
 #   You can freely change the code part, but you must follow the MIT protocol
 #   You cannot delete any information about UTS
 #   You cannot use this program to disrupt social order.
@@ -143,8 +143,11 @@ parser.add_argument('-url', type=str, help=url_help, nargs=1)  # 更新URL
 parser.add_argument('-update', type=str, help=update_help, nargs='*', choices=plugin_list)  # 更新插件
 parser.add_argument('-clip', type=str, help=clip_help, nargs='*')  # 安装轻app
 parser.add_argument('-remove', type=str, help=remove_help, nargs='*', choices=remove_plugin_list)  # 删除app
-parser.add_argument('-develop', type=str, help=develop_help, nargs='*', choices=['python_security_check'])  # 删除app
+parser.add_argument(
+    '-develop', type=str, help=develop_help, nargs='*', choices=['python_security_check', 'db2json']
+)  # 删除app
 parser.add_argument('-log', type=str, help=log_help, nargs='1', choices=['print'])  # 删除app
+parser.add_argument('-db2json', type=str, help="Sqlite => Json", nargs='1', choices=['print'])  # 数据转化Api
 
 args = parser.parse_args()
 
@@ -191,6 +194,7 @@ if args.init:
         mop_db['file_name'] = {}  # 插件文件表
         mop_db['develop'] = {  # 开发者设置
             'python_security_check': False,
+            'db2json': False,
         }
         mop_db['log'] = {
             0: (f'Init{VERSION}', 'system'),
@@ -243,6 +247,9 @@ if args.init:
             }
             mop_db['log_num'] = 0
             mop_db['db_plugin'] = {}  # 插件自定义数据
+            t_dict = mop_db['develop']
+            t_dict['db2json'] = False
+            mop_db['develop'] = t_dict
 
         # print readme
         if LANGUAGE == 'cn':
@@ -1046,3 +1053,6 @@ if args.log and mop_db_file:
             print(f'ID: {id_}')
             print('Class: ' + log_tuple[1])
             print('\t' + log_tuple[0])
+
+if args.db2json and mop_db_file:
+    mop_db = shelve.open(mop_db_path + 'mop')  # 打开数据库
