@@ -147,7 +147,7 @@ parser.add_argument(
     '-develop', type=str, help=develop_help, nargs='*', choices=['python_security_check', 'db2json']
 )  # 删除app
 parser.add_argument('-log', type=str, help=log_help, nargs=1, choices=['print'])  # log data
-parser.add_argument('-db2json', type=str, help="Sqlite => Json", nargs=1, choices=['print'])  # 数据转化Api
+parser.add_argument('-db2json', type=str, help="Sqlite => Json", nargs='*')  # 数据转化Api
 
 args = parser.parse_args()
 
