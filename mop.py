@@ -1056,3 +1056,13 @@ if args.log and mop_db_file:
 
 if args.db2json and mop_db_file:
     mop_db = shelve.open(mop_db_path + 'mop')  # 打开数据库
+    if bool(mop_db['develop']['db2json']):
+        pass
+    else:
+        with open(os.path.expanduser('~/mop_transfer.json'), 'w') as json_file:
+            error_json = {
+                "error": "The user did not turn on this feature",
+                "version": VERSION
+            }  # 错误信息
+            json.dump(error_json, json_file)  # 写入json信息
+    mop_db.close()  # 关闭数据库
