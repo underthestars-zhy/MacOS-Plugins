@@ -1057,7 +1057,14 @@ if args.log and mop_db_file:
 if args.db2json and mop_db_file:
     mop_db = shelve.open(mop_db_path + 'mop')  # 打开数据库
     if bool(mop_db['develop']['db2json']):
-        pass
+        get_value_list = args.db2json
+        dump_json = {
+            "state": "OK"
+        }
+        for value in get_value_list:
+            dump_json[value] = mop_db[value]
+        with open(os.path.expanduser('~/mop_transfer.json'), 'w') as json_file:
+            json.dump(dump_json, json_file)  # 写入json信息
     else:
         with open(os.path.expanduser('~/mop_transfer.json'), 'w') as json_file:
             error_json = {
