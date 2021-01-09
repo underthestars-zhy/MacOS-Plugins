@@ -1068,6 +1068,7 @@ if args.db2json and mop_db_file:
     else:
         with open(os.path.expanduser('~/mop_transfer.json'), 'w') as json_file:
             error_json = {
+                "state": "Error",
                 "error": "The user did not turn on this feature",
                 "version": VERSION
             }  # 错误信息
