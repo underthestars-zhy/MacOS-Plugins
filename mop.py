@@ -160,7 +160,8 @@ if __name__ == '__main__':
         '-develop', type=str, help=develop_help, nargs='*', choices=['python_security_check', 'db2json', 'json2db']
     )  # 删除app
     parser.add_argument('-log', type=str, help=log_help, nargs=1, choices=['print'])  # log data
-    parser.add_argument('-db2json', type=str, help="Sqlite => Json", nargs='*')  # 数据转化Api
+    parser.add_argument('-db2json', type=str, help="Sqlite => Json", nargs='*')  # 数据转化Api-Json
+    parser.add_argument('-json2db', type=str, help="Json => Sqlite", nargs=1)  # 数据转化Api-Sql
 
     args = parser.parse_args()
 
@@ -1079,6 +1080,7 @@ if __name__ == '__main__':
 
     if args.db2json and mop_db_file:
         mop_db = shelve.open(mop_db_path + 'mop')  # 打开数据库
+        new_log("Open DB", "API", mop_db_path)
         if bool(mop_db['develop']['db2json']):
             get_value_list = args.db2json
             dump_json = {
@@ -1088,6 +1090,7 @@ if __name__ == '__main__':
                 dump_json[value] = mop_db[value]
             with open(os.path.expanduser('~/mop_transfer.json'), 'w') as json_file:
                 json.dump(dump_json, json_file)  # 写入json信息
+            new_log("Other Plugin Get Data", "API", mop_db_path)
         else:
             with open(os.path.expanduser('~/mop_transfer.json'), 'w') as json_file:
                 error_json = {
@@ -1096,4 +1099,23 @@ if __name__ == '__main__':
                     "version": VERSION
                 }  # 错误信息
                 json.dump(error_json, json_file)  # 写入json信息
+            new_log("Other Plugin Get Data But Somethings was ERROR", "API", mop_db_path)
         mop_db.close()  # 关闭数据库
+        new_log("Close DB", "API", mop_db_path)
+
+    if args.json2db and mop_db_file:
+        mop_db = shelve.open(mop_db_path + 'mop')  # 打开数据库
+        new_log("Open DB", "API", mop_db_path)
+        if bool(mop_db['develop']['json2db']):
+            pass
+        else:
+            with open(os.path.expanduser(args.json2db[0]), 'w') as json_file:
+                error_json = {
+                    "state": "Error",
+                    "error": "The user did not turn on this feature",
+                    "version": VERSION
+                }  # 错误信息
+                json.dump(error_json, json_file)  # 写入json信息
+        new_log("Other Plugin Get Data But Somethings was ERROR", "API", mop_db_path)
+        mop_db.close()  # 关闭数据库
+        new_log("Close DB", "API", mop_db_path)
